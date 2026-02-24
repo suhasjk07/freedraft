@@ -1,0 +1,2402 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0"/>
+<meta name="description" content="FreeDraft — AI-powered contract lifecycle management. Draft, review, sign and manage contracts with advanced AI. Free forever."/>
+<meta name="theme-color" content="#0a0e1a"/>
+<title>FreeDraft — AI Contract Management, Free Forever</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS & RESET
+═══════════════════════════════════════════════ */
+:root {
+  --c-bg:       #070b16;
+  --c-surface:  #0d1220;
+  --c-surface2: #131828;
+  --c-border:   rgba(255,255,255,0.07);
+  --c-border2:  rgba(255,255,255,0.12);
+  --c-teal:     #00d4b4;
+  --c-teal2:    #00f0cc;
+  --c-teal-dim: rgba(0,212,180,0.12);
+  --c-gold:     #f5a623;
+  --c-gold-dim: rgba(245,166,35,0.12);
+  --c-red:      #ff6b6b;
+  --c-red-dim:  rgba(255,107,107,0.12);
+  --c-white:    #ffffff;
+  --c-off:      #e8edf8;
+  --c-muted:    #6b7fa3;
+  --c-muted2:   #9aaac8;
+  --c-overlay:  rgba(7,11,22,0.85);
+
+  --f-display: 'Syne', sans-serif;
+  --f-body:    'DM Sans', sans-serif;
+  --f-mono:    'DM Mono', monospace;
+
+  --r-sm:   6px;
+  --r-md:   12px;
+  --r-lg:   18px;
+  --r-xl:   24px;
+  --r-pill: 999px;
+
+  --shadow-sm:  0 2px 8px rgba(0,0,0,.3);
+  --shadow-md:  0 8px 32px rgba(0,0,0,.4);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,.5);
+  --shadow-teal:0 0 40px rgba(0,212,180,.2);
+
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --ease-in:  cubic-bezier(.4,0,1,1);
+  --ease:     cubic-bezier(.4,0,.2,1);
+
+  --nav-h: 68px;
+  --max-w: 1160px;
+  --pad-x: clamp(16px, 5vw, 32px);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{
+  font-family:var(--f-body);
+  background:var(--c-bg);
+  color:var(--c-white);
+  line-height:1.65;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+img,svg{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+ul,ol{list-style:none}
+h1,h2,h3,h4,h5{font-family:var(--f-display);line-height:1.15;letter-spacing:-.02em}
+p{color:var(--c-muted2)}
+::selection{background:rgba(0,212,180,.25);color:var(--c-white)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--c-surface)}
+::-webkit-scrollbar-thumb{background:rgba(0,212,180,.3);border-radius:3px}
+:focus-visible{outline:2px solid var(--c-teal);outline-offset:3px}
+
+/* NOISE OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT UTILITIES
+═══════════════════════════════════════════════ */
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 var(--pad-x);position:relative;z-index:1}
+.section{padding:clamp(64px,10vw,120px) 0}
+.flex{display:flex}
+.grid{display:grid}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+/* ═══════════════════════════════════════════════
+   TYPOGRAPHY SCALE
+═══════════════════════════════════════════════ */
+.t-hero{font-size:clamp(2.4rem,5.5vw,5.2rem);font-weight:800;line-height:1.1}
+.t-h2  {font-size:clamp(1.8rem,3.8vw,3.2rem);font-weight:700}
+.t-h3  {font-size:clamp(1.1rem,2vw,1.5rem);font-weight:700}
+.t-lg  {font-size:clamp(.95rem,1.6vw,1.1rem)}
+.t-sm  {font-size:.875rem}
+.t-xs  {font-size:.8rem}
+.t-xxs {font-size:.75rem}
+.t-mono{font-family:var(--f-mono)}
+.t-teal{color:var(--c-teal)}
+.t-gold{color:var(--c-gold)}
+.t-muted{color:var(--c-muted2)}
+.t-center{text-align:center}
+.t-bold{font-weight:700}
+
+/* ═══════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 26px;border-radius:var(--r-pill);border:none;cursor:pointer;
+  font-family:var(--f-body);font-size:.9rem;font-weight:500;
+  transition:all .22s var(--ease);user-select:none;white-space:nowrap;
+  text-decoration:none;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{
+  background:var(--c-teal);color:var(--c-bg);
+  box-shadow:0 0 0 0 rgba(0,212,180,.4);
+}
+.btn-primary:hover{background:var(--c-teal2);box-shadow:0 0 30px rgba(0,212,180,.35);transform:translateY(-2px)}
+.btn-ghost{
+  background:transparent;color:var(--c-white);
+  border:1px solid var(--c-border2);
+}
+.btn-ghost:hover{border-color:var(--c-teal);color:var(--c-teal);transform:translateY(-2px)}
+.btn-outline{
+  background:transparent;color:var(--c-teal);
+  border:1px solid rgba(0,212,180,.35);
+}
+.btn-outline:hover{background:var(--c-teal-dim);transform:translateY(-2px)}
+.btn-danger{background:var(--c-red);color:#fff}
+.btn-danger:hover{background:#ff4444}
+.btn-sm{padding:9px 18px;font-size:.82rem}
+.btn-lg{padding:16px 36px;font-size:1rem}
+.btn-full{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+
+/* ═══════════════════════════════════════════════
+   BADGE / CHIP / TAG
+═══════════════════════════════════════════════ */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--c-teal-dim);border:1px solid rgba(0,212,180,.25);
+  color:var(--c-teal);padding:6px 14px;border-radius:var(--r-pill);
+  font-size:.78rem;font-weight:500;font-family:var(--f-mono);letter-spacing:.05em;
+}
+.badge::before{content:'◆';font-size:.45rem}
+.tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:var(--r-pill);
+  font-size:.72rem;font-family:var(--f-mono);font-weight:500;
+}
+.tag-green{background:rgba(0,212,180,.1);color:var(--c-teal);border:1px solid rgba(0,212,180,.2)}
+.tag-gold {background:var(--c-gold-dim);color:var(--c-gold);border:1px solid rgba(245,166,35,.2)}
+.tag-red  {background:var(--c-red-dim);color:var(--c-red);border:1px solid rgba(255,107,107,.2)}
+.tag-gray {background:rgba(255,255,255,.06);color:var(--c-muted2);border:1px solid var(--c-border)}
+.tag-pulse::before{content:'●';animation:dot-pulse 1.5s ease infinite;margin-right:2px;font-size:.55rem}
+@keyframes dot-pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ═══════════════════════════════════════════════
+   CARD
+═══════════════════════════════════════════════ */
+.card{
+  background:var(--c-surface);border:1px solid var(--c-border);
+  border-radius:var(--r-xl);padding:clamp(20px,3vw,32px);
+  transition:border-color .25s,box-shadow .25s,transform .25s;
+}
+.card:hover{border-color:var(--c-border2);box-shadow:var(--shadow-md)}
+.card-hover:hover{border-color:rgba(0,212,180,.3);box-shadow:var(--shadow-teal);transform:translateY(-4px)}
+
+/* ═══════════════════════════════════════════════
+   GLOW BLOBS
+═══════════════════════════════════════════════ */
+.blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+.blob-teal{background:radial-gradient(circle,rgba(0,212,180,.14),transparent 70%)}
+.blob-blue{background:radial-gradient(circle,rgba(30,80,220,.18),transparent 70%)}
+.blob-gold{background:radial-gradient(circle,rgba(245,166,35,.1),transparent 70%)}
+
+/* ═══════════════════════════════════════════════
+   SECTION HEADER
+═══════════════════════════════════════════════ */
+.sec-header{margin-bottom:clamp(40px,6vw,64px)}
+.sec-header.center{text-align:center}
+.sec-header.center p{margin:12px auto 0;max-width:540px}
+.sec-label{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--f-mono);font-size:.73rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--c-teal);margin-bottom:14px;
+}
+.sec-label::before{content:'';width:24px;height:1px;background:var(--c-teal);flex-shrink:0}
+.sec-header h2{margin-bottom:14px}
+.sec-header p{font-size:clamp(.95rem,1.6vw,1.05rem)}
+
+/* ═══════════════════════════════════════════════
+   ════ NAVBAR ════
+═══════════════════════════════════════════════ */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:9000;
+  height:var(--nav-h);display:flex;align-items:center;
+  background:rgba(7,11,22,.75);backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--c-border);
+  transition:background .3s,box-shadow .3s;
+}
+#navbar.scrolled{background:rgba(7,11,22,.95);box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.nav-wrap{
+  max-width:var(--max-w);margin:0 auto;padding:0 var(--pad-x);
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;gap:16px;
+}
+/* Logo */
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-logo-mark{
+  width:36px;height:36px;background:var(--c-teal);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--c-bg);font-family:var(--f-display);font-size:1.1rem;font-weight:800;
+  box-shadow:0 0 16px rgba(0,212,180,.3);flex-shrink:0;
+}
+.nav-logo-text{font-family:var(--f-display);font-size:1.4rem;font-weight:800;white-space:nowrap}
+.nav-logo-text span{color:var(--c-teal)}
+/* Desktop links */
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-links a{
+  padding:8px 14px;border-radius:var(--r-md);font-size:.875rem;
+  color:var(--c-muted2);transition:color .2s,background .2s;white-space:nowrap;
+}
+.nav-links a:hover,.nav-links a.active{color:var(--c-white);background:rgba(255,255,255,.06)}
+.nav-links .nav-highlight{color:var(--c-gold)!important}
+/* Nav actions */
+.nav-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+/* Hamburger */
+.nav-burger{
+  display:none;flex-direction:column;justify-content:center;gap:5px;
+  width:40px;height:40px;background:rgba(255,255,255,.05);
+  border:1px solid var(--c-border);border-radius:var(--r-md);cursor:pointer;
+  padding:9px 10px;transition:all .2s;flex-shrink:0;
+}
+.nav-burger span{
+  display:block;width:100%;height:2px;background:var(--c-muted2);
+  border-radius:1px;transition:all .3s var(--ease-out);transform-origin:center;
+}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--c-teal)}
+.nav-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--c-teal)}
+.nav-burger:hover{border-color:var(--c-border2)}
+/* Mobile drawer */
+.nav-drawer{
+  position:fixed;top:var(--nav-h);right:0;width:min(300px,90vw);
+  height:calc(100vh - var(--nav-h));
+  background:var(--c-surface);border-left:1px solid var(--c-border);
+  z-index:8999;padding:24px;
+  transform:translateX(100%);transition:transform .35s var(--ease-out);
+  overflow-y:auto;display:flex;flex-direction:column;gap:6px;
+}
+.nav-drawer.open{transform:translateX(0)}
+.nav-drawer a{
+  display:flex;align-items:center;gap:10px;padding:13px 16px;
+  border-radius:var(--r-md);color:var(--c-muted2);font-size:.95rem;
+  transition:all .2s;
+}
+.nav-drawer a:hover,.nav-drawer a.active{background:rgba(255,255,255,.05);color:var(--c-white)}
+.nav-drawer .drawer-divider{height:1px;background:var(--c-border);margin:12px 0}
+.nav-drawer .drawer-actions{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+/* Backdrop */
+.nav-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8998;
+  opacity:0;pointer-events:none;transition:opacity .35s;
+}
+.nav-backdrop.show{opacity:1;pointer-events:all}
+
+@media(max-width:1023px){
+  .nav-links{display:none}
+  .nav-actions .btn-ghost{display:none}
+}
+@media(max-width:479px){.nav-burger{display:flex}}
+@media(min-width:480px) and (max-width:1023px){.nav-burger{display:flex}}
+
+/* ═══════════════════════════════════════════════
+   ════ HERO ════
+═══════════════════════════════════════════════ */
+#hero{
+  min-height:100svh;display:grid;place-items:center;
+  padding-top:calc(var(--nav-h) + 32px);padding-bottom:60px;
+  position:relative;overflow:hidden;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:clamp(40px,6vw,80px);
+  align-items:center;width:100%;
+}
+.hero-content{position:relative;z-index:1}
+.hero-content .badge{margin-bottom:24px}
+.hero-headline{margin-bottom:22px}
+.hero-headline .accent{
+  display:block;color:var(--c-teal);
+  background:linear-gradient(135deg,var(--c-teal),#00f0cc,#00a8ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{font-size:clamp(1rem,1.8vw,1.15rem);max-width:520px;margin-bottom:36px;line-height:1.7}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px}
+.hero-stats{
+  display:flex;gap:clamp(20px,5vw,48px);flex-wrap:wrap;
+  padding-top:28px;border-top:1px solid var(--c-border);
+}
+.stat-val{font-family:var(--f-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--c-white)}
+.stat-val em{color:var(--c-teal);font-style:normal}
+.stat-lab{font-size:.82rem;color:var(--c-muted2);margin-top:2px}
+/* Hero visual */
+.hero-visual{position:relative;z-index:1}
+.hero-dashboard{
+  background:var(--c-surface2);border:1px solid var(--c-border);
+  border-radius:var(--r-xl);padding:20px;
+  box-shadow:var(--shadow-lg),0 0 60px rgba(0,212,180,.06);
+  animation:float 7s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.db-title-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.db-dot{width:10px;height:10px;border-radius:50%}
+.db-window-title{font-size:.75rem;font-family:var(--f-mono);color:var(--c-muted2);margin-left:4px}
+.db-contracts{display:flex;flex-direction:column;gap:10px}
+.db-contract{
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-md);padding:14px;
+}
+.db-contract-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.db-contract-name{font-size:.83rem;font-weight:600}
+.db-progress{height:4px;background:rgba(255,255,255,.07);border-radius:2px;margin-bottom:6px}
+.db-progress-fill{height:100%;border-radius:2px;transition:width .5s var(--ease-out)}
+.db-progress-fill.c-teal{background:var(--c-teal)}
+.db-progress-fill.c-gold{background:var(--c-gold)}
+.db-progress-fill.c-muted{background:var(--c-muted2)}
+.db-contract-meta{display:flex;justify-content:space-between;font-size:.72rem;color:var(--c-muted2)}
+/* Floating badges */
+.hero-badge{
+  position:absolute;background:var(--c-surface);border:1px solid var(--c-border);
+  border-radius:var(--r-md);padding:10px 14px;
+  display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-md);
+  z-index:2;
+}
+.hero-badge-1{top:-18px;right:-18px;animation:float 5s ease-in-out infinite}
+.hero-badge-2{bottom:-18px;left:-18px;animation:float 5s ease-in-out infinite .8s}
+.hb-icon{font-size:1.1rem;flex-shrink:0}
+.hb-lbl{font-size:.68rem;color:var(--c-muted2)}
+.hb-val{font-size:.85rem;font-weight:600}
+
+@media(max-width:1023px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-visual{display:none}
+}
+@media(max-width:479px){
+  .hero-cta{flex-direction:column}
+  .hero-cta .btn{width:100%;justify-content:center}
+  .hero-stats{gap:20px}
+}
+
+/* ═══════════════════════════════════════════════
+   ════ LOGOS ════
+═══════════════════════════════════════════════ */
+#logos{
+  padding:36px 0;border-top:1px solid var(--c-border);
+  border-bottom:1px solid var(--c-border);overflow:hidden;
+}
+.logos-label{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--c-muted2);text-align:center;margin-bottom:24px}
+.logos-track{
+  display:flex;gap:clamp(32px,5vw,64px);align-items:center;
+  justify-content:center;flex-wrap:wrap;padding:0 var(--pad-x);
+}
+.logo-item{
+  font-family:var(--f-display);font-weight:700;font-size:.9rem;
+  color:rgba(255,255,255,.2);letter-spacing:.08em;
+  transition:color .3s,transform .3s;cursor:default;
+}
+.logo-item:hover{color:rgba(255,255,255,.55);transform:scale(1.05)}
+
+/* ═══════════════════════════════════════════════
+   ════ FEATURES TABS ════
+═══════════════════════════════════════════════ */
+#features{position:relative;overflow:hidden}
+.tabs-row{
+  display:flex;gap:6px;flex-wrap:wrap;
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-pill);padding:5px;
+  margin-bottom:clamp(32px,5vw,52px);
+  max-width:max-content;
+}
+.tab-btn{
+  padding:10px 20px;border-radius:var(--r-pill);border:none;
+  background:transparent;color:var(--c-muted2);
+  font-family:var(--f-body);font-size:.85rem;font-weight:500;
+  cursor:pointer;transition:all .25s;white-space:nowrap;
+}
+.tab-btn:hover:not(.active){color:var(--c-white);background:rgba(255,255,255,.05)}
+.tab-btn.active{background:var(--c-teal);color:var(--c-bg);font-weight:600}
+.tab-panel{display:none}
+.tab-panel.active{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,72px);align-items:start;
+  animation:tab-in .4s var(--ease-out);
+}
+@keyframes tab-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.tab-info h3{font-size:clamp(1.2rem,2.5vw,1.6rem);margin-bottom:14px}
+.tab-info .tab-desc{font-size:clamp(.9rem,1.5vw,1rem);margin-bottom:28px;line-height:1.75}
+.tab-feats{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.tab-feat{display:flex;align-items:flex-start;gap:10px;font-size:.9rem;color:var(--c-muted2)}
+.tab-feat-icon{
+  width:22px;height:22px;border-radius:50%;background:var(--c-teal-dim);
+  border:1px solid rgba(0,212,180,.3);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;font-size:.65rem;color:var(--c-teal);
+}
+/* Tab visuals */
+.tab-visual{
+  background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r-xl);
+  padding:clamp(18px,3vw,28px);min-height:340px;position:relative;overflow:hidden;
+}
+.tab-visual::after{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:200px;height:200px;background:radial-gradient(circle,rgba(0,212,180,.08),transparent);
+  pointer-events:none;
+}
+/* Workflow visual */
+.wf-step{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-md);margin-bottom:6px;
+}
+.wf-step.active-step{border-color:rgba(0,212,180,.35);background:rgba(0,212,180,.04)}
+.wf-icon{font-size:1rem;width:26px;text-align:center;flex-shrink:0}
+.wf-name{font-size:.82rem;flex:1}
+.wf-arrow{text-align:center;color:var(--c-border);font-size:.75rem;margin-bottom:6px}
+/* Repo visual */
+.rv-search{
+  display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);
+  border:1px solid var(--c-border);border-radius:var(--r-md);padding:10px 14px;
+  margin-bottom:14px;font-size:.8rem;color:var(--c-muted2);
+}
+.rv-item{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-sm);margin-bottom:7px;font-size:.8rem;cursor:pointer;
+  transition:all .2s;
+}
+.rv-item:hover{border-color:rgba(0,212,180,.25);background:rgba(0,212,180,.03)}
+.rv-item-name{flex:1}
+/* Analytics */
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-bottom:16px}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.chart-bar{
+  width:100%;border-radius:4px 4px 0 0;
+  background:rgba(0,212,180,.2);transition:height .6s var(--ease-out);min-height:4px;
+}
+.chart-bar.peak{background:var(--c-teal)}
+.chart-bar-lbl{font-size:.65rem;color:var(--c-muted2)}
+.chart-metric{text-align:center;padding-top:12px;border-top:1px solid var(--c-border)}
+.chart-big{font-family:var(--f-display);font-size:2rem;font-weight:800;color:var(--c-teal)}
+.chart-sub{font-size:.75rem;color:var(--c-muted2)}
+/* Collab */
+.collab-text{
+  background:rgba(255,255,255,.04);border-radius:var(--r-md);padding:14px;
+  font-size:.82rem;line-height:1.8;margin-bottom:14px;
+}
+.redline{background:rgba(255,80,80,.12);text-decoration:line-through;color:#ff9999;padding:0 3px;border-radius:3px}
+.greenline{background:rgba(0,212,180,.12);color:var(--c-teal);padding:0 3px;border-radius:3px}
+.comment-item{display:flex;gap:10px;margin-bottom:10px}
+.cm-av{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;
+}
+.cm-body{background:rgba(255,255,255,.04);border-radius:var(--r-sm) var(--r-sm) var(--r-sm) 0;padding:9px 12px;flex:1}
+.cm-meta{font-size:.68rem;color:var(--c-muted2);margin-bottom:4px}
+.cm-text{font-size:.8rem}
+/* Sign visual */
+.sign-doc-preview{background:rgba(255,255,255,.04);border-radius:var(--r-md);padding:14px;margin-bottom:14px}
+.sign-line{height:6px;border-radius:3px;background:rgba(255,255,255,.07);margin-bottom:8px}
+.sign-line.w80{width:80%}.sign-line.w60{width:60%}.sign-line.w40{width:40%}
+.sign-zone{
+  border:2px dashed rgba(0,212,180,.35);border-radius:var(--r-md);
+  padding:18px;text-align:center;
+}
+.sign-cursive{
+  font-family:var(--f-display);font-size:1.6rem;font-style:italic;color:var(--c-teal);
+  border-bottom:2px solid var(--c-teal);display:inline-block;padding:4px 0;
+}
+.sign-ts{font-size:.7rem;color:var(--c-muted2);margin-top:8px}
+
+@media(max-width:767px){
+  .tab-panel.active{grid-template-columns:1fr}
+  .tabs-row{max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .tabs-row::-webkit-scrollbar{display:none}
+  .tab-visual{min-height:auto}
+}
+
+/* ═══════════════════════════════════════════════
+   ════ AI SECTION ════
+═══════════════════════════════════════════════ */
+#ai-section{position:relative;overflow:hidden}
+.ai-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--c-border);border-radius:var(--r-xl);overflow:hidden;
+  margin-bottom:clamp(40px,6vw,64px);
+}
+.ai-card{
+  background:var(--c-surface);padding:28px;cursor:default;
+  transition:background .25s;position:relative;overflow:hidden;
+}
+.ai-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,212,180,.05),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.ai-card:hover{background:var(--c-surface2)}
+.ai-card:hover::before{opacity:1}
+.ai-card-icon{
+  width:44px;height:44px;border-radius:var(--r-md);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  background:var(--c-teal-dim);border:1px solid rgba(0,212,180,.2);
+}
+.ai-card h3{font-size:1rem;margin-bottom:8px}
+.ai-card p{font-size:.85rem}
+/* AI Demo row */
+.ai-demo-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,48px);
+  align-items:start;
+}
+.ai-demo-info .badge{margin-bottom:20px}
+.ai-demo-info h3{font-size:clamp(1.2rem,2.5vw,1.6rem);margin-bottom:14px}
+.ai-demo-info p{margin-bottom:20px;font-size:.95rem}
+.ai-query-list{display:flex;flex-direction:column;gap:8px}
+.ai-query{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-md);font-size:.85rem;color:var(--c-muted2);
+  cursor:pointer;transition:all .2s;
+}
+.ai-query:hover{background:var(--c-teal-dim);border-color:rgba(0,212,180,.3);color:var(--c-white)}
+.ai-query::before{content:'→';color:var(--c-teal);font-size:.9rem}
+/* Chat window */
+.chat-win{
+  background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r-xl);
+  overflow:hidden;
+}
+.chat-header{
+  padding:14px 18px;background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:10px;
+}
+.chat-status-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--c-teal);
+  animation:dot-pulse 2s ease infinite;flex-shrink:0;
+}
+.chat-title{font-size:.8rem;font-family:var(--f-mono);color:var(--c-muted2)}
+.chat-messages{
+  height:280px;overflow-y:auto;padding:16px;
+  display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;
+}
+.msg{padding:10px 14px;border-radius:var(--r-md);font-size:.82rem;max-width:88%;line-height:1.6}
+.msg-user{
+  background:var(--c-teal-dim);border:1px solid rgba(0,212,180,.2);
+  color:var(--c-white);margin-left:auto;border-radius:var(--r-md) var(--r-md) 4px var(--r-md);
+}
+.msg-ai{
+  background:rgba(255,255,255,.04);color:var(--c-muted2);
+  border-radius:var(--r-md) var(--r-md) var(--r-md) 4px;
+}
+.msg-ai .highlight{color:var(--c-teal);font-weight:500}
+.typing-ind{display:flex;gap:4px;padding:10px 14px;align-items:center}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--c-teal);animation:typing-b 1.4s ease infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typing-b{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-8px);opacity:1}}
+.chat-input-row{
+  padding:12px;border-top:1px solid var(--c-border);
+  display:flex;gap:8px;align-items:center;
+}
+.chat-input-field{
+  flex:1;background:rgba(255,255,255,.05);border:1px solid var(--c-border);
+  border-radius:var(--r-md);padding:9px 14px;color:var(--c-white);
+  font-size:.82rem;outline:none;transition:border-color .2s;
+}
+.chat-input-field:focus{border-color:rgba(0,212,180,.4)}
+.chat-send-btn{
+  width:34px;height:34px;border-radius:var(--r-md);border:none;
+  background:var(--c-teal);color:var(--c-bg);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;
+  flex-shrink:0;transition:background .2s;
+}
+.chat-send-btn:hover{background:var(--c-teal2)}
+
+@media(max-width:767px){
+  .ai-grid{grid-template-columns:1fr 1fr}
+  .ai-demo-row{grid-template-columns:1fr}
+}
+@media(max-width:479px){.ai-grid{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════════════════
+   ════ DASHBOARD DEMO ════
+═══════════════════════════════════════════════ */
+#dashboard-demo{position:relative;overflow:hidden}
+.demo-shell{
+  background:var(--c-surface);border:1px solid var(--c-border);
+  border-radius:var(--r-xl);overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+.demo-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:rgba(255,255,255,.025);
+  border-bottom:1px solid var(--c-border);flex-wrap:wrap;gap:10px;
+}
+.demo-dots{display:flex;gap:6px}
+.demo-dot{width:12px;height:12px;border-radius:50%}
+.demo-tabs{display:flex;gap:2px;background:rgba(255,255,255,.04);border-radius:var(--r-md);padding:3px}
+.demo-tab{
+  padding:6px 14px;border-radius:var(--r-sm);font-size:.78rem;
+  cursor:pointer;color:var(--c-muted2);transition:all .2s;border:none;background:none;
+}
+.demo-tab.active{background:var(--c-teal);color:var(--c-bg);font-weight:600}
+.demo-body{
+  display:grid;grid-template-columns:220px 1fr;min-height:480px;
+}
+.demo-sidebar{
+  border-right:1px solid var(--c-border);padding:20px 14px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.demo-nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  border-radius:var(--r-md);font-size:.82rem;color:var(--c-muted2);
+  cursor:pointer;transition:all .2s;border:none;background:none;width:100%;text-align:left;
+}
+.demo-nav-item:hover{background:rgba(255,255,255,.05);color:var(--c-white)}
+.demo-nav-item.active{background:var(--c-teal-dim);color:var(--c-teal);font-weight:500}
+.demo-nav-item .d-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.demo-sidebar-section{
+  font-size:.68rem;font-family:var(--f-mono);letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.2);padding:14px 12px 6px;
+}
+.demo-main{padding:20px;overflow:hidden}
+.demo-view{display:none}
+.demo-view.active{display:block;animation:tab-in .3s var(--ease-out)}
+/* Contracts list */
+.demo-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;gap:10px;flex-wrap:wrap;
+}
+.demo-search{
+  display:flex;align-items:center;gap:8px;flex:1;max-width:280px;
+  background:rgba(255,255,255,.05);border:1px solid var(--c-border);
+  border-radius:var(--r-pill);padding:8px 14px;font-size:.8rem;color:var(--c-muted2);
+  cursor:text;
+}
+.demo-search input{
+  background:none;border:none;outline:none;color:var(--c-white);font-size:.8rem;
+  width:100%;font-family:var(--f-body);
+}
+.demo-contract-row{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;transition:all .2s;
+}
+.demo-contract-row:hover{border-color:rgba(0,212,180,.25);background:rgba(0,212,180,.03)}
+.dcr-icon{font-size:1.1rem;flex-shrink:0}
+.dcr-info{flex:1;min-width:0}
+.dcr-name{font-size:.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dcr-meta{font-size:.72rem;color:var(--c-muted2)}
+.dcr-actions{display:flex;gap:6px;flex-shrink:0}
+.dcr-btn{
+  padding:5px 10px;border-radius:var(--r-sm);border:1px solid var(--c-border);
+  background:none;color:var(--c-muted2);font-size:.72rem;cursor:pointer;
+  transition:all .2s;
+}
+.dcr-btn:hover{border-color:var(--c-teal);color:var(--c-teal)}
+/* Create contract form */
+.form-group{margin-bottom:16px}
+.form-label{
+  display:block;font-size:.8rem;color:var(--c-muted2);
+  margin-bottom:6px;font-weight:500;
+}
+.form-input,.form-select,.form-textarea{
+  width:100%;background:rgba(255,255,255,.05);border:1px solid var(--c-border);
+  border-radius:var(--r-md);padding:10px 14px;color:var(--c-white);
+  font-size:.85rem;outline:none;transition:border-color .2s;font-family:var(--f-body);
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(0,212,180,.4);background:rgba(255,255,255,.07)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M6 8L0 0h12z' fill='%236b7fa3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.form-select option{background:var(--c-surface);color:var(--c-white)}
+.form-textarea{min-height:100px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:479px){.form-row{grid-template-columns:1fr}}
+/* Analytics view */
+.analytics-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:599px){.analytics-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:359px){.analytics-cards{grid-template-columns:1fr}}
+.ac-card{background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:var(--r-md);padding:14px}
+.ac-num{font-family:var(--f-display);font-size:1.6rem;font-weight:800;color:var(--c-teal)}
+.ac-lbl{font-size:.75rem;color:var(--c-muted2);margin-top:4px}
+/* Demo sidebar toggle on small screens */
+@media(max-width:599px){
+  .demo-body{grid-template-columns:1fr}
+  .demo-sidebar{display:none}
+}
+
+/* ═══════════════════════════════════════════════
+   ════ INTEGRATIONS ════
+═══════════════════════════════════════════════ */
+#integrations{position:relative;overflow:hidden}
+.int-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:1023px){.int-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:767px) {.int-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:359px) {.int-grid{grid-template-columns:1fr}}
+.int-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:var(--r-lg);
+  padding:clamp(16px,3vw,24px);cursor:pointer;transition:all .25s;
+}
+.int-card:hover{
+  border-color:rgba(0,212,180,.3);background:rgba(0,212,180,.04);
+  transform:translateY(-4px);box-shadow:var(--shadow-md);
+}
+.int-icon{font-size:clamp(1.4rem,3vw,1.8rem);margin-bottom:12px}
+.int-name{font-family:var(--f-display);font-size:.95rem;font-weight:700;margin-bottom:6px}
+.int-desc{font-size:.78rem;color:var(--c-muted2);margin-bottom:10px;line-height:1.5}
+
+/* ═══════════════════════════════════════════════
+   ════ PRICING ════
+═══════════════════════════════════════════════ */
+#pricing{position:relative;overflow:hidden}
+.pricing-toggle{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin-bottom:clamp(32px,5vw,52px);
+}
+.toggle-label{font-size:.9rem;color:var(--c-muted2)}
+.toggle-switch{
+  position:relative;width:46px;height:26px;cursor:pointer;
+}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{
+  position:absolute;inset:0;background:rgba(255,255,255,.1);
+  border-radius:var(--r-pill);border:1px solid var(--c-border);transition:background .25s;
+}
+.toggle-switch input:checked+.toggle-track{background:var(--c-teal)}
+.toggle-thumb{
+  position:absolute;left:3px;top:3px;width:18px;height:18px;
+  border-radius:50%;background:var(--c-white);transition:transform .25s;
+}
+.toggle-switch input:checked~.toggle-thumb{transform:translateX(20px)}
+.toggle-badge{
+  font-size:.72rem;background:var(--c-gold-dim);color:var(--c-gold);
+  padding:2px 8px;border-radius:var(--r-pill);font-family:var(--f-mono);
+}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,3vw,24px)}
+@media(max-width:767px){.pricing-grid{grid-template-columns:1fr;max-width:400px;margin:0 auto}}
+.plan-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-xl);padding:clamp(22px,3vw,32px);
+  position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;
+}
+.plan-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
+.plan-card.featured{
+  border-color:rgba(0,212,180,.35);background:rgba(0,212,180,.04);
+}
+.plan-popular{
+  position:absolute;top:0;right:20px;
+  background:var(--c-teal);color:var(--c-bg);
+  font-size:.7rem;font-weight:700;padding:4px 12px;border-radius:0 0 8px 8px;
+}
+.plan-name{font-family:var(--f-display);font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.plan-price{
+  font-family:var(--f-display);font-size:clamp(2.2rem,4vw,3rem);
+  font-weight:800;margin-bottom:4px;line-height:1;
+}
+.plan-price sub{font-size:.9rem;font-weight:400;color:var(--c-muted2)}
+.plan-period{font-size:.82rem;color:var(--c-muted2);margin-bottom:24px}
+.plan-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan-feat{display:flex;align-items:center;gap:9px;font-size:.85rem;color:var(--c-muted2)}
+.plan-feat::before{content:'✓';color:var(--c-teal);font-weight:700;flex-shrink:0}
+.plan-feat.na{opacity:.35}
+.plan-feat.na::before{content:'—';color:var(--c-muted2)}
+
+/* ═══════════════════════════════════════════════
+   ════ TESTIMONIALS ════
+═══════════════════════════════════════════════ */
+#testimonials{position:relative;overflow:hidden}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,3vw,24px)}
+@media(max-width:1023px){.testi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:599px) {.testi-grid{grid-template-columns:1fr}}
+.testi-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);
+  border-radius:var(--r-lg);padding:clamp(20px,3vw,28px);transition:all .25s;
+}
+.testi-card:hover{border-color:rgba(0,212,180,.2);box-shadow:var(--shadow-sm)}
+.testi-stars{color:var(--c-gold);font-size:.9rem;margin-bottom:14px;letter-spacing:2px}
+.testi-quote{
+  font-size:.92rem;color:var(--c-off);line-height:1.75;margin-bottom:20px;
+  font-style:italic;
+}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-av{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;
+}
+.testi-name{font-size:.88rem;font-weight:600}
+.testi-role{font-size:.75rem;color:var(--c-muted2)}
+
+/* ═══════════════════════════════════════════════
+   ════ SECURITY ════
+═══════════════════════════════════════════════ */
+#security-section{position:relative;overflow:hidden}
+.security-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,8vw,80px);align-items:start}
+@media(max-width:767px){.security-grid{grid-template-columns:1fr}}
+.sec-feats{display:flex;flex-direction:column;gap:20px}
+.sec-feat-item{display:flex;align-items:flex-start;gap:16px}
+.sec-feat-icon{
+  width:42px;height:42px;border-radius:var(--r-md);flex-shrink:0;
+  background:var(--c-teal-dim);border:1px solid rgba(0,212,180,.2);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;margin-top:2px;
+}
+.sec-feat-title{font-weight:600;font-size:.95rem;margin-bottom:4px}
+.sec-feat-desc{font-size:.85rem;color:var(--c-muted2)}
+.comp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.comp-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:var(--r-md);
+  padding:16px;display:flex;align-items:center;gap:14px;transition:all .25s;
+}
+.comp-card:hover{border-color:rgba(0,212,180,.25)}
+.comp-icon{font-size:1.6rem;flex-shrink:0}
+.comp-name{font-weight:600;font-size:.88rem}
+.comp-sub{font-size:.72rem;color:var(--c-muted2)}
+
+/* ═══════════════════════════════════════════════
+   ════ CTA SECTION ════
+═══════════════════════════════════════════════ */
+#cta-section{position:relative;overflow:hidden}
+.cta-box{
+  background:linear-gradient(135deg,rgba(0,212,180,.08),rgba(30,80,220,.08));
+  border:1px solid rgba(0,212,180,.15);border-radius:var(--r-xl);
+  padding:clamp(40px,8vw,80px) clamp(24px,6vw,80px);text-align:center;
+  position:relative;overflow:hidden;
+}
+.cta-box::before{
+  content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+  width:500px;height:300px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(0,212,180,.1),transparent 70%);pointer-events:none;
+}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+@media(max-width:479px){
+  .cta-actions{flex-direction:column;align-items:center}
+  .cta-actions .btn{width:100%;max-width:300px}
+}
+.cta-note{font-size:.78rem;color:var(--c-muted2);margin-top:20px;font-family:var(--f-mono)}
+
+/* ═══════════════════════════════════════════════
+   ════ FOOTER ════
+═══════════════════════════════════════════════ */
+footer{padding:clamp(48px,8vw,72px) 0 clamp(28px,4vw,40px);border-top:1px solid var(--c-border)}
+.footer-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;
+  gap:clamp(24px,4vw,48px);margin-bottom:clamp(36px,5vw,56px);
+}
+@media(max-width:1023px){.footer-grid{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:599px) {.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:359px) {.footer-grid{grid-template-columns:1fr}}
+.footer-brand p{font-size:.875rem;max-width:260px;margin-top:14px}
+.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.footer-logo-mark{width:32px;height:32px;background:var(--c-teal);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--c-bg);font-family:var(--f-display);font-size:1rem;font-weight:800;flex-shrink:0}
+.footer-logo-text{font-family:var(--f-display);font-size:1.3rem;font-weight:800}
+.footer-logo-text span{color:var(--c-teal)}
+.social-row{display:flex;gap:8px;margin-top:18px}
+.social-btn{
+  width:34px;height:34px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.05);border:1px solid var(--c-border);
+  display:flex;align-items:center;justify-content:center;font-size:.88rem;
+  transition:all .2s;cursor:pointer;
+}
+.social-btn:hover{border-color:var(--c-teal);color:var(--c-teal);transform:translateY(-2px)}
+.footer-col-title{font-size:.72rem;font-family:var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;font-weight:600}
+.footer-col ul li{margin-bottom:9px}
+.footer-col ul li a{font-size:.85rem;color:var(--c-muted2);transition:color .2s}
+.footer-col ul li a:hover{color:var(--c-white)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;border-top:1px solid var(--c-border)}
+.footer-copy{font-size:.78rem;color:var(--c-muted2)}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a{font-size:.78rem;color:var(--c-muted2);transition:color .2s}
+.footer-links a:hover{color:var(--c-white)}
+
+/* ═══════════════════════════════════════════════
+   ════ MODALS ════
+═══════════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:var(--c-overlay);z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{
+  background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--r-xl);
+  padding:clamp(24px,4vw,40px);width:100%;max-width:480px;max-height:90vh;overflow-y:auto;
+  transform:translateY(20px) scale(.97);transition:transform .35s var(--ease-out);position:relative;
+}
+.modal-overlay.open .modal-box{transform:translateY(0) scale(1)}
+.modal-close{
+  position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.07);border:1px solid var(--c-border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  color:var(--c-muted2);font-size:.9rem;transition:all .2s;
+}
+.modal-close:hover{background:rgba(255,255,255,.12);color:var(--c-white)}
+.modal-title{font-size:1.3rem;font-weight:700;margin-bottom:6px}
+.modal-sub{font-size:.875rem;color:var(--c-muted2);margin-bottom:24px}
+.modal-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--c-muted2);font-size:.8rem}
+.modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--c-border)}
+.modal-footer{text-align:center;margin-top:20px;font-size:.83rem;color:var(--c-muted2)}
+.modal-footer a{color:var(--c-teal)}
+.oauth-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+.oauth-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;
+  background:rgba(255,255,255,.05);border:1px solid var(--c-border);border-radius:var(--r-md);
+  cursor:pointer;font-size:.83rem;color:var(--c-muted2);transition:all .2s;
+}
+.oauth-btn:hover{border-color:var(--c-border2);color:var(--c-white);background:rgba(255,255,255,.08)}
+/* Contract Modal */
+.modal-box.modal-wide{max-width:700px}
+.contract-preview{background:rgba(255,255,255,.04);border-radius:var(--r-md);padding:20px;font-size:.875rem;line-height:1.9;max-height:300px;overflow-y:auto}
+.contract-preview h4{font-family:var(--f-display);margin-bottom:14px;text-align:center}
+.contract-preview p{color:var(--c-off);margin-bottom:10px}
+
+/* ═══════════════════════════════════════════════
+   ════ TOAST ════
+═══════════════════════════════════════════════ */
+#toast-container{
+  position:fixed;bottom:24px;right:24px;z-index:99999;
+  display:flex;flex-direction:column;gap:10px;pointer-events:none;
+}
+.toast{
+  display:flex;align-items:center;gap:12px;
+  background:var(--c-surface2);border:1px solid var(--c-border2);
+  border-radius:var(--r-md);padding:13px 18px;
+  box-shadow:var(--shadow-lg);pointer-events:all;
+  transform:translateX(120%);transition:transform .4s var(--ease-out);
+  max-width:min(340px,calc(100vw - 48px));
+}
+.toast.show{transform:translateX(0)}
+.toast-icon{font-size:1rem;flex-shrink:0}
+.toast-text{font-size:.82rem;flex:1}
+.toast.success{border-left:3px solid var(--c-teal)}
+.toast.error  {border-left:3px solid var(--c-red)}
+.toast.info   {border-left:3px solid #4a90d9}
+.toast.warning{border-left:3px solid var(--c-gold)}
+
+/* ═══════════════════════════════════════════════
+   ════ SCROLL REVEAL ════
+═══════════════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s var(--ease-out),transform .65s var(--ease-out)}
+.reveal.revealed{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.18s}.reveal-d3{transition-delay:.26s}.reveal-d4{transition-delay:.34s}
+
+/* ═══════════════════════════════════════════════
+   ════ MISC ════
+═══════════════════════════════════════════════ */
+.separator{height:1px;background:var(--c-border);margin:0}
+/* No-select utility */
+.no-select{-webkit-user-select:none;user-select:none}
+/* Smooth badge count */
+.nav-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;background:var(--c-teal);
+  color:var(--c-bg);font-size:.62rem;font-weight:700;margin-left:2px;
+}
+/* Alert boxes inside forms */
+.form-alert{
+  padding:12px 16px;border-radius:var(--r-md);font-size:.83rem;margin-bottom:16px;
+  display:none;align-items:center;gap:8px;
+}
+.form-alert.show{display:flex}
+.form-alert.success{background:rgba(0,212,180,.1);border:1px solid rgba(0,212,180,.2);color:var(--c-teal)}
+.form-alert.error  {background:var(--c-red-dim);border:1px solid rgba(255,107,107,.2);color:var(--c-red)}
+/* Progress bar for chat */
+.chat-powered{font-size:.68rem;color:var(--c-muted2);text-align:center;padding:6px 0;font-family:var(--f-mono)}
+</style>
+</head>
+
+<body class="no-select">
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ═══ NAV BACKDROP ═══ -->
+<div class="nav-backdrop" id="navBackdrop" onclick="closeDrawer()"></div>
+
+<!-- ═══════════════════════════════════
+     NAVBAR
+═══════════════════════════════════ -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-wrap">
+    <a href="#hero" class="nav-logo" aria-label="FreeDraft Home">
+      <div class="nav-logo-mark" aria-hidden="true">F</div>
+      <span class="nav-logo-text">Free<span>Draft</span></span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="#features" class="nav-link-item">Features</a></li>
+      <li><a href="#ai-section" class="nav-link-item">AI Tools</a></li>
+      <li><a href="#dashboard-demo" class="nav-link-item">Live Demo</a></li>
+      <li><a href="#integrations" class="nav-link-item">Integrations</a></li>
+      <li><a href="#pricing" class="nav-link-item">Pricing</a></li>
+      <li><a href="hosting-guide.html" class="nav-link-item nav-highlight">📖 Host It</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openModal('modal-login')" aria-label="Log in">Log In</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-signup')" aria-label="Get started free">Get Started</button>
+      <button class="nav-burger" id="navBurger" aria-label="Open navigation" aria-expanded="false" onclick="toggleDrawer()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+<!-- Mobile Drawer -->
+<nav class="nav-drawer" id="navDrawer" role="navigation" aria-label="Mobile navigation">
+  <a href="#features" onclick="closeDrawer()">⚡ Features</a>
+  <a href="#ai-section" onclick="closeDrawer()">🤖 AI Tools</a>
+  <a href="#dashboard-demo" onclick="closeDrawer()">📊 Live Demo</a>
+  <a href="#integrations" onclick="closeDrawer()">🔗 Integrations</a>
+  <a href="#pricing" onclick="closeDrawer()">💰 Pricing</a>
+  <a href="#security-section" onclick="closeDrawer()">🛡️ Security</a>
+  <a href="hosting-guide.html">📖 Hosting Guide</a>
+  <div class="drawer-divider"></div>
+  <div class="drawer-actions">
+    <button class="btn btn-ghost btn-full" onclick="closeDrawer();openModal('modal-login')">Log In</button>
+    <button class="btn btn-primary btn-full" onclick="closeDrawer();openModal('modal-signup')">Get Started Free</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════
+     HERO
+═══════════════════════════════════ -->
+<section id="hero" aria-labelledby="hero-title">
+  <div class="blob blob-teal" style="width:min(700px,100vw);height:min(700px,100vw);top:-150px;left:-200px;opacity:.6"></div>
+  <div class="blob blob-blue" style="width:min(500px,80vw);height:min(500px,80vw);bottom:-100px;right:-100px"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="badge reveal" role="note">Open-Source Contract Intelligence</div>
+        <h1 class="t-hero hero-headline reveal reveal-d1" id="hero-title">
+          Contract Management<br>
+          <span class="accent">Supercharged by AI.</span>
+          Always Free.
+        </h1>
+        <p class="hero-sub reveal reveal-d2">FreeDraft gives growing teams AI-powered contract drafting, review, signing, and analytics — every premium feature unlocked. No paywall. No limits.</p>
+        <div class="hero-cta reveal reveal-d3">
+          <button class="btn btn-primary btn-lg" onclick="openModal('modal-signup')">Start for Free →</button>
+          <button class="btn btn-ghost btn-lg" onclick="document.getElementById('dashboard-demo').scrollIntoView({behavior:'smooth'})">See Live Demo</button>
+        </div>
+        <div class="hero-stats reveal reveal-d4">
+          <div class="stat-item"><div class="stat-val">10<em>x</em></div><div class="stat-lab">Faster turnaround</div></div>
+          <div class="stat-item"><div class="stat-val">$<em>0</em></div><div class="stat-lab">Forever free</div></div>
+          <div class="stat-item"><div class="stat-val">15<em>+</em></div><div class="stat-lab">Native integrations</div></div>
+          <div class="stat-item"><div class="stat-val">50<em>k+</em></div><div class="stat-lab">Teams onboarded</div></div>
+        </div>
+      </div>
+      <div class="hero-visual reveal reveal-d2" aria-hidden="true">
+        <div class="hero-dashboard">
+          <div class="db-title-bar">
+            <div class="db-dot" style="background:#ff6b6b"></div>
+            <div class="db-dot" style="background:var(--c-gold)"></div>
+            <div class="db-dot" style="background:var(--c-teal)"></div>
+            <span class="db-window-title t-mono">FreeDraft — Dashboard</span>
+            <span class="tag tag-green tag-pulse" style="margin-left:auto">AI Active</span>
+          </div>
+          <div class="db-contracts">
+            <div class="db-contract">
+              <div class="db-contract-top"><span class="db-contract-name">NDA — Acme Corp</span><span class="tag tag-green">Signed</span></div>
+              <div class="db-progress"><div class="db-progress-fill c-teal" style="width:100%"></div></div>
+              <div class="db-contract-meta"><span>Signed 22 Feb 2026</span><span>100%</span></div>
+            </div>
+            <div class="db-contract">
+              <div class="db-contract-top"><span class="db-contract-name">MSA — GlobalTech</span><span class="tag tag-gold">In Review</span></div>
+              <div class="db-progress"><div class="db-progress-fill c-gold" style="width:65%"></div></div>
+              <div class="db-contract-meta"><span>Legal reviewing</span><span>65%</span></div>
+            </div>
+            <div class="db-contract" style="opacity:.6">
+              <div class="db-contract-top"><span class="db-contract-name">SLA — StartupXYZ</span><span class="tag tag-gray">Drafting</span></div>
+              <div class="db-progress"><div class="db-progress-fill c-muted" style="width:20%"></div></div>
+              <div class="db-contract-meta"><span>AI drafting…</span><span>20%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-badge hero-badge-1">
+          <span class="hb-icon">🛡️</span>
+          <div><div class="hb-lbl">Risk Score</div><div class="hb-val" style="color:var(--c-teal)">Low Risk</div></div>
+        </div>
+        <div class="hero-badge hero-badge-2">
+          <span class="hb-icon">⚡</span>
+          <div><div class="hb-lbl">AI Review</div><div class="hb-val">12 sec</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LOGOS ═══ -->
+<section id="logos" aria-label="Trusted by teams at">
+  <div class="wrap">
+    <p class="logos-label">Trusted by teams at</p>
+    <div class="logos-track" role="list">
+      <span class="logo-item" role="listitem">ACMECORP</span>
+      <span class="logo-item" role="listitem">GLOBALTECH</span>
+      <span class="logo-item" role="listitem">FINVERSE</span>
+      <span class="logo-item" role="listitem">LEGALFLOW</span>
+      <span class="logo-item" role="listitem">SAASPILOT</span>
+      <span class="logo-item" role="listitem">HEALTHBRIDGE</span>
+      <span class="logo-item" role="listitem">EDUKRAFT</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     FEATURES
+═══════════════════════════════════ -->
+<section id="features" class="section" aria-labelledby="features-title">
+  <div class="blob blob-teal" style="width:400px;height:400px;top:0;right:-100px;opacity:.4"></div>
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <span class="sec-label">Complete Platform</span>
+      <h2 class="t-h2" id="features-title">Everything contracts.<br>In one place.</h2>
+      <p>From first draft to final signature — manage every stage of the contract lifecycle without switching tools.</p>
+    </div>
+    <div class="tabs-row reveal reveal-d1" role="tablist" aria-label="Feature tabs">
+      <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-workflows"   onclick="switchTab(this,'workflows')"   id="tab-btn-workflows">Workflows</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-collab"     onclick="switchTab(this,'collab')"     id="tab-btn-collab">Collaboration</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-repo"       onclick="switchTab(this,'repo')"       id="tab-btn-repo">Repository</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-analytics"  onclick="switchTab(this,'analytics')"  id="tab-btn-analytics">Analytics</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-esign"      onclick="switchTab(this,'esign')"      id="tab-btn-esign">eSignatures</button>
+    </div>
+    <!-- WORKFLOWS -->
+    <div id="tab-workflows" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-workflows">
+      <div class="tab-info">
+        <h3>Automated contract workflows</h3>
+        <p class="tab-desc">Design conditional approval chains, auto-assign reviewers, and track every contract's status in real time — no engineering required.</p>
+        <div class="tab-feats">
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Drag-and-drop workflow builder with conditional logic</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Role-based approvals with escalation rules</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Automated reminders and deadline tracking</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Bulk contract generation from templates</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Slack & Teams notifications built-in</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-signup')">Start for Free →</button>
+      </div>
+      <div class="tab-visual" aria-hidden="true">
+        <div class="wf-step"><span class="wf-icon">📋</span><span class="wf-name">Contract request submitted</span><span class="tag tag-green">Done</span></div>
+        <div class="wf-arrow">↓</div>
+        <div class="wf-step"><span class="wf-icon">🤖</span><span class="wf-name">AI drafts contract from template</span><span class="tag tag-green">Done</span></div>
+        <div class="wf-arrow">↓</div>
+        <div class="wf-step active-step"><span class="wf-icon">⚖️</span><span class="wf-name">Legal team review &amp; redline</span><span class="tag tag-gold">In Progress</span></div>
+        <div class="wf-arrow">↓</div>
+        <div class="wf-step" style="opacity:.5"><span class="wf-icon">✍️</span><span class="wf-name">Collect eSignatures</span><span class="tag tag-gray">Pending</span></div>
+        <div class="wf-arrow">↓</div>
+        <div class="wf-step" style="opacity:.5"><span class="wf-icon">🗄️</span><span class="wf-name">Auto-archive &amp; index</span><span class="tag tag-gray">Pending</span></div>
+      </div>
+    </div>
+    <!-- COLLAB -->
+    <div id="tab-collab" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-collab">
+      <div class="tab-info">
+        <h3>Real-time collaborative editing</h3>
+        <p class="tab-desc">Legal and business teams share one workspace. Comment, redline, and approve — whether in FreeDraft, Word, or Google Docs.</p>
+        <div class="tab-feats">
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Live co-editing with conflict resolution</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Inline comments and threaded discussions</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>AI-powered redline suggestions</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Version history with one-click restore</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>External party sharing with access controls</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-signup')">Start for Free →</button>
+      </div>
+      <div class="tab-visual" aria-hidden="true">
+        <div class="collab-text">
+          The payment shall be due within <span class="redline">60 days</span><span class="greenline"> 30 days</span> of invoice receipt, subject to the terms herein…
+        </div>
+        <div class="comment-item">
+          <div class="cm-av" style="background:rgba(0,212,180,.2);color:var(--c-teal)">SL</div>
+          <div class="cm-body"><div class="cm-meta">Sarah L. · Legal · 2m ago</div><div class="cm-text">Changed to 30 days per company policy.</div></div>
+        </div>
+        <div class="comment-item">
+          <div class="cm-av" style="background:rgba(245,166,35,.2);color:var(--c-gold)">MK</div>
+          <div class="cm-body"><div class="cm-meta">Mike K. · Sales · 1m ago</div><div class="cm-text">✓ Approved — client confirmed this works.</div></div>
+        </div>
+        <div class="comment-item">
+          <div class="cm-av" style="background:rgba(100,120,255,.2);color:#aab0ff">AI</div>
+          <div class="cm-body"><div class="cm-meta">AI Assistant · just now</div><div class="cm-text" style="color:var(--c-teal)">This change reduces payment risk by 40% based on similar contracts in your repository.</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- REPO -->
+    <div id="tab-repo" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-repo">
+      <div class="tab-info">
+        <h3>Unified contract repository</h3>
+        <p class="tab-desc">Every contract automatically organized, tagged, and searchable. Find anything in seconds with AI-powered semantic search.</p>
+        <div class="tab-feats">
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>AI auto-extracts metadata on upload</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Semantic full-text search across all contracts</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Custom tags, folders, and access permissions</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Renewal alerts and expiry notifications</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Unlimited contract storage</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-signup')">Start for Free →</button>
+      </div>
+      <div class="tab-visual" aria-hidden="true">
+        <div class="rv-search"><span>🔍</span><span>Search 124 contracts…</span><span class="tag tag-green" style="margin-left:auto">AI</span></div>
+        <div class="rv-item"><span>📄</span><span class="rv-item-name">NDA — Acme Corp 2025</span><span class="tag tag-green">Active</span></div>
+        <div class="rv-item"><span>📑</span><span class="rv-item-name">MSA — GlobalTech Solutions</span><span class="tag tag-gold">Review</span></div>
+        <div class="rv-item"><span>📋</span><span class="rv-item-name">SLA — StartupXYZ Platform</span><span class="tag tag-green">Active</span></div>
+        <div class="rv-item"><span>⚠️</span><span class="rv-item-name">Vendor Agreement — OldCo</span><span class="tag tag-red">Expiring</span></div>
+        <div class="rv-item" style="opacity:.55"><span>📄</span><span class="rv-item-name">Employment — Jane D.</span><span class="tag tag-green">Active</span></div>
+      </div>
+    </div>
+    <!-- ANALYTICS -->
+    <div id="tab-analytics" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-analytics">
+      <div class="tab-info">
+        <h3>Contract analytics &amp; insights</h3>
+        <p class="tab-desc">Transform your contract data into decisions. Track cycle times, identify bottlenecks, and forecast renewals automatically.</p>
+        <div class="tab-feats">
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Custom dashboard builder with drag-and-drop widgets</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Approval cycle time and bottleneck analysis</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Revenue at risk from expiring contracts</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Team workload and performance metrics</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Export to CSV, PDF, or connect to BI tools</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-signup')">Start for Free →</button>
+      </div>
+      <div class="tab-visual" aria-hidden="true">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.8rem">
+          <span>Approval Cycle Times (days)</span>
+          <span style="color:var(--c-teal)">▼ Improving</span>
+        </div>
+        <div class="chart-bars">
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:70%"></div><div class="chart-bar-lbl">Jan</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:85%"></div><div class="chart-bar-lbl">Feb</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:60%"></div><div class="chart-bar-lbl">Mar</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:50%"></div><div class="chart-bar-lbl">Apr</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar peak" style="height:30%"></div><div class="chart-bar-lbl">May</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar peak" style="height:22%;opacity:.7"></div><div class="chart-bar-lbl">Jun</div></div>
+        </div>
+        <div class="chart-metric"><div class="chart-big">↓68%</div><div class="chart-sub">Reduction in approval time after AI</div></div>
+      </div>
+    </div>
+    <!-- ESIGN -->
+    <div id="tab-esign" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-esign">
+      <div class="tab-info">
+        <h3>Legally binding eSignatures</h3>
+        <p class="tab-desc">Collect signatures from anywhere. Compliant with ESIGN, EIDAS, and UETA — fully audit-trailed and tamper-proof.</p>
+        <div class="tab-feats">
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Draw, type, or upload your signature</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>SMS &amp; email-based identity verification</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Bulk send to hundreds of signers instantly</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Tamper-proof audit trail with timestamps</div>
+          <div class="tab-feat"><div class="tab-feat-icon">✓</div>Auto-archive signed documents</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-signup')">Start for Free →</button>
+      </div>
+      <div class="tab-visual" aria-hidden="true">
+        <div class="sign-doc-preview">
+          <div class="sign-line w80"></div><div class="sign-line w60"></div>
+          <div class="sign-line w80"></div><div class="sign-line w40"></div>
+          <div class="sign-line w80"></div><div class="sign-line w60"></div>
+        </div>
+        <div class="sign-zone">
+          <div style="font-size:.75rem;color:var(--c-muted2);margin-bottom:8px">✍️ Signature requested</div>
+          <div class="sign-cursive">John Smith</div>
+          <div class="sign-ts">Signed 24 Feb 2026 · 10:42 AM IST</div>
+        </div>
+        <div style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <span class="tag tag-green">ESIGN ✓</span>
+          <span class="tag tag-green">EIDAS ✓</span>
+          <span class="tag tag-green">UETA ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     AI SECTION
+═══════════════════════════════════ -->
+<section id="ai-section" class="section" aria-labelledby="ai-title" style="background:linear-gradient(180deg,transparent,rgba(0,212,180,.025),transparent)">
+  <div class="wrap">
+    <div class="sec-header center reveal">
+      <span class="sec-label">Advanced AI Engine</span>
+      <h2 class="t-h2" id="ai-title">AI that actually<br><span class="t-teal">understands contracts</span></h2>
+      <p>Our AI is trained on millions of commercial contracts, legal standards, and jurisdiction-specific regulations — not a generic chatbot.</p>
+    </div>
+    <div class="ai-grid reveal reveal-d1">
+      <div class="ai-card"><div class="ai-card-icon">⚡</div><h3>AI Contract Drafting</h3><p>Describe what you need in plain English. FreeDraft AI drafts a complete, jurisdiction-aware contract in under 30 seconds.</p></div>
+      <div class="ai-card"><div class="ai-card-icon">🔍</div><h3>Deep Contract Review</h3><p>Instant risk identification — missing indemnity clauses, unfavorable liability caps, auto-renewal traps, and 50+ other red flags.</p></div>
+      <div class="ai-card"><div class="ai-card-icon">🤝</div><h3>Negotiation Intelligence</h3><p>AI-generated counter-proposals ranked by risk. Know exactly which clauses to push back on and why.</p></div>
+      <div class="ai-card"><div class="ai-card-icon">📊</div><h3>Data Extraction</h3><p>Drop in any contract — PDF, Word, scanned image — and get all key data structured and searchable automatically.</p></div>
+      <div class="ai-card"><div class="ai-card-icon">🌐</div><h3>Multi-Language Support</h3><p>Draft, review, and compare contracts across 30+ languages with AI-native translation that preserves legal meaning.</p></div>
+      <div class="ai-card"><div class="ai-card-icon">📅</div><h3>Obligation Tracking</h3><p>AI automatically extracts deadlines, payment terms, and renewal dates — and sends smart alerts before they're due.</p></div>
+    </div>
+    <div class="ai-demo-row reveal reveal-d2">
+      <div class="ai-demo-info">
+        <div class="badge">Live Demo</div>
+        <h3 style="margin-bottom:14px">Ask FreeDraft AI anything</h3>
+        <p>Our AI understands legal context, your company playbook, and past contract patterns to give precise, actionable answers.</p>
+        <div class="ai-query-list" id="aiQueryList">
+          <div class="ai-query" onclick="sendQuery('Review this NDA for any red flags')">Review this NDA for any red flags</div>
+          <div class="ai-query" onclick="sendQuery('Draft a SaaS MSA with monthly billing')">Draft a SaaS MSA with monthly billing</div>
+          <div class="ai-query" onclick="sendQuery('Which contracts expire in the next 90 days?')">Which contracts expire in the next 90 days?</div>
+          <div class="ai-query" onclick="sendQuery('Summarize the liability clause in plain English')">Summarize the liability clause in plain English</div>
+        </div>
+      </div>
+      <div class="chat-win" role="region" aria-label="AI Chat Demo">
+        <div class="chat-header">
+          <div class="chat-status-dot"></div>
+          <span class="chat-title">FreeDraft AI Assistant</span>
+          <span class="tag tag-green tag-pulse" style="margin-left:auto">Online</span>
+        </div>
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
+          <div class="msg msg-ai">Hi! I'm FreeDraft AI. Ask me anything about your contracts — drafting, reviewing, risks, or obligations. <span class="highlight">Try the quick prompts on the left.</span></div>
+        </div>
+        <div class="chat-powered">Powered by FreeDraft AI Engine v2.4</div>
+        <div class="chat-input-row">
+          <input class="chat-input-field" id="chatInput" type="text" placeholder="Ask about your contracts…" aria-label="Chat input" maxlength="500" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"/>
+          <button class="chat-send-btn" onclick="sendChat()" aria-label="Send message">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     DASHBOARD DEMO
+═══════════════════════════════════ -->
+<section id="dashboard-demo" class="section" aria-labelledby="demo-title">
+  <div class="blob blob-blue" style="width:400px;height:400px;top:0;left:-100px;opacity:.4"></div>
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <span class="sec-label">Interactive Demo</span>
+      <h2 class="t-h2" id="demo-title">Experience FreeDraft<br><span class="t-teal">live right now</span></h2>
+      <p>A fully working demo — create contracts, sign them, and manage your repository. Data persists in your browser.</p>
+    </div>
+    <div class="demo-shell reveal reveal-d1">
+      <div class="demo-topbar">
+        <div class="demo-dots">
+          <div class="demo-dot" style="background:#ff6b6b"></div>
+          <div class="demo-dot" style="background:var(--c-gold)"></div>
+          <div class="demo-dot" style="background:var(--c-teal)"></div>
+        </div>
+        <div class="demo-tabs" role="tablist">
+          <button class="demo-tab active" role="tab" onclick="switchDemoView(this,'view-contracts')">📄 Contracts</button>
+          <button class="demo-tab" role="tab" onclick="switchDemoView(this,'view-create')">✏️ Create</button>
+          <button class="demo-tab" role="tab" onclick="switchDemoView(this,'view-analytics')">📊 Analytics</button>
+          <button class="demo-tab" role="tab" onclick="switchDemoView(this,'view-sign')">✍️ Sign</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="tag tag-green tag-pulse">Live Data</span>
+        </div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-sidebar" aria-label="App navigation">
+          <div class="demo-sidebar-section">Navigation</div>
+          <button class="demo-nav-item active" onclick="switchDemoViewSide(this,'view-contracts')"><span class="d-icon">📄</span>Contracts</button>
+          <button class="demo-nav-item" onclick="switchDemoViewSide(this,'view-create')"><span class="d-icon">✏️</span>Create New</button>
+          <button class="demo-nav-item" onclick="switchDemoViewSide(this,'view-analytics')"><span class="d-icon">📊</span>Analytics</button>
+          <button class="demo-nav-item" onclick="switchDemoViewSide(this,'view-sign')"><span class="d-icon">✍️</span>eSign</button>
+          <div class="demo-sidebar-section">Quick Stats</div>
+          <div style="padding:10px 12px;background:rgba(255,255,255,.03);border-radius:var(--r-md)">
+            <div style="font-size:.75rem;color:var(--c-muted2)">Total Contracts</div>
+            <div id="sidebar-count" style="font-family:var(--f-display);font-size:1.4rem;font-weight:800;color:var(--c-teal)">0</div>
+          </div>
+        </div>
+        <div class="demo-main">
+          <!-- CONTRACTS VIEW -->
+          <div id="view-contracts" class="demo-view active">
+            <div class="demo-toolbar">
+              <div class="demo-search"><span>🔍</span><input type="text" id="contractSearch" placeholder="Search contracts…" oninput="filterContracts(this.value)" aria-label="Search contracts"/></div>
+              <button class="btn btn-primary btn-sm" onclick="switchDemoView(document.querySelector('.demo-tab:nth-child(2)'),'view-create')">+ New Contract</button>
+            </div>
+            <div id="contractsList" aria-live="polite" aria-label="Contracts list"></div>
+          </div>
+          <!-- CREATE VIEW -->
+          <div id="view-create" class="demo-view">
+            <h3 style="font-size:1.1rem;margin-bottom:18px">Create New Contract</h3>
+            <div class="form-alert success" id="createSuccess"><span>✓</span><span>Contract created successfully!</span></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label" for="cName">Contract Name *</label><input class="form-input" id="cName" type="text" placeholder="e.g. NDA — Acme Corp" maxlength="80"/></div>
+              <div class="form-group"><label class="form-label" for="cType">Contract Type *</label>
+                <select class="form-select" id="cType">
+                  <option value="">Select type…</option>
+                  <option>NDA</option><option>MSA</option><option>SLA</option>
+                  <option>Employment Agreement</option><option>Vendor Agreement</option>
+                  <option>Partnership Agreement</option><option>License Agreement</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label" for="cParty">Counterparty *</label><input class="form-input" id="cParty" type="text" placeholder="e.g. Acme Corp" maxlength="60"/></div>
+              <div class="form-group"><label class="form-label" for="cValue">Contract Value ($)</label><input class="form-input" id="cValue" type="number" placeholder="e.g. 50000" min="0"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label" for="cStart">Start Date</label><input class="form-input" id="cStart" type="date"/></div>
+              <div class="form-group"><label class="form-label" for="cEnd">End Date</label><input class="form-input" id="cEnd" type="date"/></div>
+            </div>
+            <div class="form-group"><label class="form-label" for="cNotes">Notes / Key Terms</label><textarea class="form-textarea" id="cNotes" placeholder="e.g. Annual renewal, governed by NY law, liability capped at $100k…" maxlength="500"></textarea></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="createContract()">🤖 AI Draft &amp; Create</button>
+              <button class="btn btn-ghost" onclick="clearCreateForm()">Clear</button>
+            </div>
+          </div>
+          <!-- ANALYTICS VIEW -->
+          <div id="view-analytics" class="demo-view">
+            <h3 style="font-size:1.1rem;margin-bottom:16px">Contract Analytics</h3>
+            <div class="analytics-cards" id="analyticsCards"></div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:var(--r-md);padding:16px">
+              <div style="font-size:.82rem;font-weight:600;margin-bottom:12px">Status Breakdown</div>
+              <div id="statusBars"></div>
+            </div>
+          </div>
+          <!-- SIGN VIEW -->
+          <div id="view-sign" class="demo-view">
+            <h3 style="font-size:1.1rem;margin-bottom:16px">eSignature</h3>
+            <div class="form-group"><label class="form-label" for="signSelect">Select Contract to Sign</label>
+              <select class="form-select" id="signSelect">
+                <option value="">Choose a contract…</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label" for="signerName">Your Full Name *</label><input class="form-input" id="signerName" type="text" placeholder="John Smith" maxlength="60"/></div>
+            <div class="form-group"><label class="form-label" for="signerEmail">Email Address *</label><input class="form-input" id="signerEmail" type="email" placeholder="john@company.com" maxlength="80"/></div>
+            <div class="form-group">
+              <label class="form-label">Signature Preview</label>
+              <div style="background:rgba(255,255,255,.04);border:1px solid var(--c-border);border-radius:var(--r-md);padding:16px;text-align:center;min-height:70px;display:flex;align-items:center;justify-content:center">
+                <div id="signPreview" style="font-family:var(--f-display);font-size:1.6rem;font-style:italic;color:var(--c-teal);border-bottom:2px solid var(--c-teal);padding:4px 12px;min-width:120px;transition:all .3s"> </div>
+              </div>
+            </div>
+            <div class="form-alert success" id="signSuccess"><span>✓</span><span id="signSuccessMsg">Contract signed successfully!</span></div>
+            <button class="btn btn-primary" onclick="signContract()">✍️ Sign Contract</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     INTEGRATIONS
+═══════════════════════════════════ -->
+<section id="integrations" class="section" aria-labelledby="int-title">
+  <div class="wrap">
+    <div class="sec-header center reveal">
+      <span class="sec-label">Integrations</span>
+      <h2 class="t-h2" id="int-title">Works with your<br><span class="t-teal">entire stack</span></h2>
+      <p>FreeDraft connects natively with the tools your team already uses — no custom coding required.</p>
+    </div>
+    <div class="int-grid">
+      <div class="int-card reveal" onclick="toast('Gmail integration activated!','success')"><div class="int-icon">📧</div><div class="int-name">Gmail</div><div class="int-desc">Send and receive contracts directly from your inbox</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal reveal-d1" onclick="toast('Slack integration activated!','success')"><div class="int-icon">💬</div><div class="int-name">Slack</div><div class="int-desc">Contract alerts, approvals, and status updates in Slack</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal reveal-d2" onclick="toast('Salesforce integration activated!','success')"><div class="int-icon">☁️</div><div class="int-name">Salesforce</div><div class="int-desc">Trigger contracts from CRM deals automatically</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal reveal-d3" onclick="toast('Google Drive integration activated!','success')"><div class="int-icon">📁</div><div class="int-name">Google Drive</div><div class="int-desc">Sync contracts to and from Drive seamlessly</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal" onclick="toast('Microsoft Word integration activated!','success')"><div class="int-icon">📝</div><div class="int-name">Microsoft Word</div><div class="int-desc">Review and redline contracts without leaving Word</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal reveal-d1" onclick="toast('Teams integration activated!','success')"><div class="int-icon">🔷</div><div class="int-name">MS Teams</div><div class="int-desc">Collaborate on contracts inside Teams channels</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal reveal-d2" onclick="toast('Jira integration activated!','success')"><div class="int-icon">🎫</div><div class="int-name">Jira</div><div class="int-desc">Link contracts to engineering tickets and projects</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal reveal-d3" onclick="toast('Zapier integration activated!','success')"><div class="int-icon">🔗</div><div class="int-name">Zapier</div><div class="int-desc">Connect to 3,000+ apps via Zapier automation</div><span class="tag tag-green tag-pulse">Live</span></div>
+      <div class="int-card reveal" onclick="toast('HubSpot coming soon — join waitlist!','info')"><div class="int-icon">💰</div><div class="int-name">HubSpot</div><div class="int-desc">Generate contracts from HubSpot deals instantly</div><span class="tag tag-gold">Coming Soon</span></div>
+      <div class="int-card reveal reveal-d1" onclick="toast('SAP integration coming soon!','info')"><div class="int-icon">🏢</div><div class="int-name">SAP</div><div class="int-desc">Enterprise procurement contract integration</div><span class="tag tag-gold">Coming Soon</span></div>
+      <div class="int-card reveal reveal-d2" onclick="toast('Power BI connector coming soon!','info')"><div class="int-icon">📊</div><div class="int-name">Power BI</div><div class="int-desc">Push contract analytics to Power BI dashboards</div><span class="tag tag-gold">Coming Soon</span></div>
+      <div class="int-card reveal reveal-d3" onclick="toast('DocuSign bridge coming soon!','info')"><div class="int-icon">🔑</div><div class="int-name">DocuSign</div><div class="int-desc">Route contracts to DocuSign for legacy workflows</div><span class="tag tag-gold">Coming Soon</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     PRICING
+═══════════════════════════════════ -->
+<section id="pricing" class="section" aria-labelledby="pricing-title">
+  <div class="blob blob-teal" style="width:500px;height:500px;bottom:-100px;right:-150px;opacity:.4"></div>
+  <div class="wrap">
+    <div class="sec-header center reveal">
+      <span class="sec-label">Pricing</span>
+      <h2 class="t-h2" id="pricing-title">Free. Forever.<br><span class="t-teal">No hidden costs.</span></h2>
+      <p>FreeDraft is open-source and self-hostable. Host it yourself for free, or use our managed cloud.</p>
+    </div>
+    <div class="pricing-toggle reveal" role="group" aria-label="Billing cycle toggle">
+      <span class="toggle-label">Monthly</span>
+      <label class="toggle-switch" aria-label="Toggle annual billing">
+        <input type="checkbox" id="billingToggle" onchange="toggleBilling(this)"/>
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+      <span class="toggle-label">Annual</span>
+      <span class="toggle-badge" id="billingBadge">Save 20%</span>
+    </div>
+    <div class="pricing-grid reveal reveal-d1" role="list">
+      <div class="plan-card" role="listitem">
+        <div class="plan-name">Community</div>
+        <div class="plan-price">$0<sub>/mo</sub></div>
+        <div class="plan-period">Self-hosted, unlimited</div>
+        <div class="plan-feats">
+          <div class="plan-feat">Unlimited contracts</div>
+          <div class="plan-feat">AI drafting &amp; review</div>
+          <div class="plan-feat">eSignatures (unlimited)</div>
+          <div class="plan-feat">Contract repository</div>
+          <div class="plan-feat">Basic analytics</div>
+          <div class="plan-feat">8 integrations</div>
+          <div class="plan-feat">Community support</div>
+          <div class="plan-feat na">Priority support</div>
+          <div class="plan-feat na">SSO / SAML</div>
+        </div>
+        <button class="btn btn-ghost btn-full" onclick="openModal('modal-signup')">Get Started →</button>
+      </div>
+      <div class="plan-card featured" role="listitem">
+        <div class="plan-popular">Most Popular</div>
+        <div class="plan-name">Cloud Free</div>
+        <div class="plan-price">$0<sub>/mo</sub></div>
+        <div class="plan-period">Managed hosting, no setup</div>
+        <div class="plan-feats">
+          <div class="plan-feat">Unlimited contracts</div>
+          <div class="plan-feat">Advanced AI features</div>
+          <div class="plan-feat">eSignatures (unlimited)</div>
+          <div class="plan-feat">Full contract repository</div>
+          <div class="plan-feat">Advanced analytics</div>
+          <div class="plan-feat">All 15+ integrations</div>
+          <div class="plan-feat">Email &amp; chat support</div>
+          <div class="plan-feat">Team collaboration</div>
+          <div class="plan-feat na">SSO / SAML</div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="openModal('modal-signup')">Start Free →</button>
+      </div>
+      <div class="plan-card" role="listitem">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price" id="enterprisePrice">Custom</div>
+        <div class="plan-period">Dedicated infrastructure</div>
+        <div class="plan-feats">
+          <div class="plan-feat">Everything in Cloud Free</div>
+          <div class="plan-feat">Dedicated AI model</div>
+          <div class="plan-feat">SSO / SAML / LDAP</div>
+          <div class="plan-feat">Custom contract playbooks</div>
+          <div class="plan-feat">Dedicated CSM</div>
+          <div class="plan-feat">SLA-backed uptime</div>
+          <div class="plan-feat">On-premise deployment</div>
+          <div class="plan-feat">Audit logs &amp; compliance</div>
+          <div class="plan-feat">Custom integrations</div>
+        </div>
+        <button class="btn btn-ghost btn-full" onclick="openModal('modal-demo')">Contact Sales →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     TESTIMONIALS
+═══════════════════════════════════ -->
+<section id="testimonials" class="section" aria-labelledby="testi-title" style="background:linear-gradient(180deg,transparent,rgba(0,212,180,.02),transparent)">
+  <div class="wrap">
+    <div class="sec-header center reveal">
+      <span class="sec-label">Testimonials</span>
+      <h2 class="t-h2" id="testi-title">Legal teams <span class="t-teal">love it</span></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"FreeDraft replaced a $40k/year CLM tool for us. The AI review caught three unfavorable clauses our lawyers missed. Incredible for the price."</p><div class="testi-author"><div class="testi-av" style="background:rgba(0,212,180,.15);color:var(--c-teal)">AK</div><div><div class="testi-name">Anjali Kapoor</div><div class="testi-role">General Counsel · FinVerse</div></div></div></div>
+      <div class="testi-card reveal reveal-d1"><div class="testi-stars">★★★★★</div><p class="testi-quote">"We went from 14-day contract cycles to 2 days after deploying FreeDraft. The Salesforce integration alone saved our sales team 6 hours a week."</p><div class="testi-author"><div class="testi-av" style="background:rgba(245,166,35,.15);color:var(--c-gold)">RB</div><div><div class="testi-name">Rohan Bhatt</div><div class="testi-role">VP Sales · GlobalTech</div></div></div></div>
+      <div class="testi-card reveal reveal-d2"><div class="testi-stars">★★★★★</div><p class="testi-quote">"The self-hosted option was a game-changer for our GDPR requirements. Full compliance, all running on our own infrastructure."</p><div class="testi-author"><div class="testi-av" style="background:rgba(100,120,255,.15);color:#aab0ff">ML</div><div><div class="testi-name">Marta Löfgren</div><div class="testi-role">Head of Legal · Nordbank</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SECURITY
+═══════════════════════════════════ -->
+<section id="security-section" class="section" aria-labelledby="sec-title">
+  <div class="wrap">
+    <div class="security-grid">
+      <div class="reveal">
+        <span class="sec-label">Security &amp; Compliance</span>
+        <h2 class="t-h2" style="margin-bottom:14px" id="sec-title">Built for enterprises<br><span class="t-teal">that care about trust</span></h2>
+        <p style="margin-bottom:36px">FreeDraft meets the strictest security standards. Your contracts are encrypted, auditable, and protected at every layer.</p>
+        <div class="sec-feats">
+          <div class="sec-feat-item"><div class="sec-feat-icon">🔐</div><div><div class="sec-feat-title">End-to-End Encryption</div><div class="sec-feat-desc">AES-256 at rest, TLS 1.3 in transit for every contract.</div></div></div>
+          <div class="sec-feat-item"><div class="sec-feat-icon">🕵️</div><div><div class="sec-feat-title">Complete Audit Trail</div><div class="sec-feat-desc">Every action logged, timestamped, and immutable. Full eDiscovery ready.</div></div></div>
+          <div class="sec-feat-item"><div class="sec-feat-icon">🌍</div><div><div class="sec-feat-title">Data Residency Control</div><div class="sec-feat-desc">Choose US, EU, APAC — or run fully on-premise.</div></div></div>
+          <div class="sec-feat-item"><div class="sec-feat-icon">🔑</div><div><div class="sec-feat-title">SSO &amp; 2FA</div><div class="sec-feat-desc">SAML 2.0, OAuth, LDAP, and hardware key support.</div></div></div>
+        </div>
+      </div>
+      <div class="reveal reveal-d1">
+        <div class="comp-grid">
+          <div class="comp-card"><div class="comp-icon">🛡️</div><div><div class="comp-name">ISO 27001</div><div class="comp-sub">Information Security</div></div></div>
+          <div class="comp-card"><div class="comp-icon">🇪🇺</div><div><div class="comp-name">GDPR</div><div class="comp-sub">EU Data Protection</div></div></div>
+          <div class="comp-card"><div class="comp-icon">🏥</div><div><div class="comp-name">HIPAA</div><div class="comp-sub">Healthcare Compliance</div></div></div>
+          <div class="comp-card"><div class="comp-icon">⭐</div><div><div class="comp-name">SOC 2 Type II</div><div class="comp-sub">Security Audited</div></div></div>
+          <div class="comp-card"><div class="comp-icon">✍️</div><div><div class="comp-name">ESIGN / EIDAS</div><div class="comp-sub">eSignature Legal</div></div></div>
+          <div class="comp-card"><div class="comp-icon">🔒</div><div><div class="comp-name">UETA</div><div class="comp-sub">US eSign Law</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     CTA
+═══════════════════════════════════ -->
+<section id="cta-section" class="section" aria-labelledby="cta-title">
+  <div class="wrap">
+    <div class="cta-box reveal">
+      <div class="badge" style="margin-bottom:20px">🚀 Join 50,000+ users</div>
+      <h2 class="t-h2" id="cta-title">Start managing contracts<br><span class="t-teal">smarter, today</span></h2>
+      <p style="max-width:480px;margin:14px auto 0">No credit card. No trial. No limits. FreeDraft is free forever — self-host it or use our managed cloud.</p>
+      <div class="cta-actions">
+        <button class="btn btn-primary btn-lg" onclick="openModal('modal-signup')">Create Free Account →</button>
+        <a href="hosting-guide.html" class="btn btn-ghost btn-lg">📖 Hostinger Guide</a>
+      </div>
+      <div class="cta-note">✓ Open-source &nbsp;·&nbsp; ✓ Self-hostable &nbsp;·&nbsp; ✓ GDPR compliant &nbsp;·&nbsp; ✓ No vendor lock-in</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     FOOTER
+═══════════════════════════════════ -->
+<footer aria-label="Site footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-mark">F</div>
+          <span class="footer-logo-text">Free<span>Draft</span></span>
+        </div>
+        <p>AI-powered contract lifecycle management. Free forever, open-source, built for teams that move fast.</p>
+        <div class="social-row" aria-label="Social links">
+          <a class="social-btn" href="#" aria-label="GitHub" onclick="toast('GitHub repository coming soon!','info');return false">⌥</a>
+          <a class="social-btn" href="#" aria-label="Twitter/X" onclick="toast('Follow us on X!','info');return false">𝕏</a>
+          <a class="social-btn" href="#" aria-label="LinkedIn" onclick="toast('Connect on LinkedIn!','info');return false">in</a>
+          <a class="social-btn" href="#" aria-label="Discord" onclick="toast('Join our Discord community!','info');return false">◈</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Product</div>
+        <ul>
+          <li><a href="#features">AI Drafting</a></li>
+          <li><a href="#features">eSignatures</a></li>
+          <li><a href="#features">Repository</a></li>
+          <li><a href="#features">Analytics</a></li>
+          <li><a href="#features">Workflows</a></li>
+          <li><a href="#integrations">Integrations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Solutions</div>
+        <ul>
+          <li><a href="#features">For Legal Teams</a></li>
+          <li><a href="#features">For Sales</a></li>
+          <li><a href="#features">For Finance</a></li>
+          <li><a href="#features">For HR</a></li>
+          <li><a href="#features">For SaaS</a></li>
+          <li><a href="#pricing">Enterprise</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Resources</div>
+        <ul>
+          <li><a href="hosting-guide.html">Hosting Guide</a></li>
+          <li><a href="#" onclick="toast('Docs coming soon!','info');return false">Documentation</a></li>
+          <li><a href="#" onclick="toast('API reference coming soon!','info');return false">API Reference</a></li>
+          <li><a href="#" onclick="toast('Blog coming soon!','info');return false">Blog</a></li>
+          <li><a href="#" onclick="toast('Community forum launching soon!','info');return false">Community</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="#" onclick="toast('About page coming soon!','info');return false">About</a></li>
+          <li><a href="#" onclick="toast('Careers page launching soon!','info');return false">Careers</a></li>
+          <li><a href="#security-section">Security</a></li>
+          <li><a href="#" onclick="openModal('modal-privacy');return false">Privacy Policy</a></li>
+          <li><a href="#" onclick="toast('Terms of Service coming soon!','info');return false">Terms of Service</a></li>
+          <li><a href="mailto:hello@freedraft.io">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 FreeDraft. Open-source under MIT License.</div>
+      <div class="footer-links">
+        <a href="#" onclick="openModal('modal-privacy');return false">Privacy</a>
+        <a href="#" onclick="toast('Terms of Service coming soon!','info');return false">Terms</a>
+        <a href="#security-section">Security</a>
+        <a href="hosting-guide.html">Hosting Guide</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════
+     MODALS
+═══════════════════════════════════ -->
+<!-- SIGN UP -->
+<div class="modal-overlay" id="modal-signup" role="dialog" aria-modal="true" aria-labelledby="signup-title">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-signup')" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="signup-title">Create your free account</h2>
+    <p class="modal-sub">No credit card required. Free forever.</p>
+    <div class="oauth-row">
+      <button class="oauth-btn" onclick="oauthSignup('Google')">🔵 Google</button>
+      <button class="oauth-btn" onclick="oauthSignup('GitHub')">⚫ GitHub</button>
+    </div>
+    <div class="modal-divider">or sign up with email</div>
+    <div class="form-alert" id="signupAlert"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label" for="su-fname">First Name *</label><input class="form-input" id="su-fname" type="text" maxlength="50" autocomplete="given-name"/></div>
+      <div class="form-group"><label class="form-label" for="su-lname">Last Name *</label><input class="form-input" id="su-lname" type="text" maxlength="50" autocomplete="family-name"/></div>
+    </div>
+    <div class="form-group"><label class="form-label" for="su-email">Work Email *</label><input class="form-input" id="su-email" type="email" maxlength="100" autocomplete="email"/></div>
+    <div class="form-group"><label class="form-label" for="su-company">Company Name</label><input class="form-input" id="su-company" type="text" maxlength="80"/></div>
+    <div class="form-group"><label class="form-label" for="su-pass">Password *</label><input class="form-input" id="su-pass" type="password" maxlength="100" autocomplete="new-password" placeholder="Minimum 8 characters"/></div>
+    <button class="btn btn-primary btn-full" onclick="doSignup()" style="margin-top:4px">Create Free Account →</button>
+    <div class="modal-footer">Already have an account? <a href="#" onclick="closeModal('modal-signup');openModal('modal-login')">Log in</a></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="modal-overlay" id="modal-login" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-login')" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="login-title">Welcome back</h2>
+    <p class="modal-sub">Sign in to your FreeDraft account</p>
+    <div class="oauth-row">
+      <button class="oauth-btn" onclick="oauthSignup('Google')">🔵 Google</button>
+      <button class="oauth-btn" onclick="oauthSignup('GitHub')">⚫ GitHub</button>
+    </div>
+    <div class="modal-divider">or continue with email</div>
+    <div class="form-alert" id="loginAlert"></div>
+    <div class="form-group"><label class="form-label" for="li-email">Email *</label><input class="form-input" id="li-email" type="email" maxlength="100" autocomplete="email"/></div>
+    <div class="form-group"><label class="form-label" for="li-pass">Password *</label><input class="form-input" id="li-pass" type="password" maxlength="100" autocomplete="current-password"/>
+      <div style="text-align:right;margin-top:6px"><a href="#" style="font-size:.78rem;color:var(--c-muted2)" onclick="toast('Password reset email sent!','success')">Forgot password?</a></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Log In →</button>
+    <div class="modal-footer">Don't have an account? <a href="#" onclick="closeModal('modal-login');openModal('modal-signup')">Sign up free</a></div>
+  </div>
+</div>
+
+<!-- DEMO REQUEST -->
+<div class="modal-overlay" id="modal-demo" role="dialog" aria-modal="true" aria-labelledby="demo-req-title">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-demo')" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="demo-req-title">Request a Demo</h2>
+    <p class="modal-sub">Our team will reach out within 24 hours to schedule a personalized walkthrough.</p>
+    <div class="form-alert" id="demoAlert"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label" for="dm-name">Full Name *</label><input class="form-input" id="dm-name" type="text" maxlength="80"/></div>
+      <div class="form-group"><label class="form-label" for="dm-company">Company *</label><input class="form-input" id="dm-company" type="text" maxlength="80"/></div>
+    </div>
+    <div class="form-group"><label class="form-label" for="dm-email">Work Email *</label><input class="form-input" id="dm-email" type="email" maxlength="100"/></div>
+    <div class="form-group"><label class="form-label" for="dm-size">Team Size</label>
+      <select class="form-select" id="dm-size">
+        <option value="">Select…</option><option>1–10</option><option>11–50</option><option>51–200</option><option>200+</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label" for="dm-msg">What are you hoping to solve?</label><textarea class="form-textarea" id="dm-msg" placeholder="Tell us about your current contract challenges…" maxlength="500"></textarea></div>
+    <button class="btn btn-primary btn-full" onclick="doDemo()">Request Demo →</button>
+  </div>
+</div>
+
+<!-- CONTRACT PREVIEW -->
+<div class="modal-overlay" id="modal-contract" role="dialog" aria-modal="true" aria-labelledby="contract-preview-title">
+  <div class="modal-box modal-wide">
+    <button class="modal-close" onclick="closeModal('modal-contract')" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="contract-preview-title">Contract Preview</h2>
+    <div class="contract-preview" id="contractPreviewContent" aria-live="polite"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="downloadContract()">⬇ Download PDF</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-contract');openModal('modal-login')">✍️ Sign Now</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-contract')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY -->
+<div class="modal-overlay" id="modal-privacy" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+  <div class="modal-box modal-wide">
+    <button class="modal-close" onclick="closeModal('modal-privacy')" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="privacy-title">Privacy Policy</h2>
+    <p class="modal-sub">Last updated: February 24, 2026</p>
+    <div style="font-size:.875rem;color:var(--c-muted2);line-height:1.8;max-height:400px;overflow-y:auto">
+      <p style="margin-bottom:12px"><strong style="color:var(--c-white)">Data We Collect:</strong> FreeDraft collects account information (name, email), contract data you create, and usage analytics to improve the platform.</p>
+      <p style="margin-bottom:12px"><strong style="color:var(--c-white)">How We Use It:</strong> Your data is used solely to provide the FreeDraft service. We never sell your data to third parties, use it for advertising, or share it without your consent.</p>
+      <p style="margin-bottom:12px"><strong style="color:var(--c-white)">Data Security:</strong> All data is encrypted at rest (AES-256) and in transit (TLS 1.3). We are ISO 27001 certified and SOC 2 Type II audited.</p>
+      <p style="margin-bottom:12px"><strong style="color:var(--c-white)">Your Rights (GDPR):</strong> You have the right to access, correct, export, or delete your data at any time. Contact us at privacy@freedraft.io.</p>
+      <p style="margin-bottom:12px"><strong style="color:var(--c-white)">Data Retention:</strong> Account data is retained for 30 days after account deletion. Contract data can be exported before deletion.</p>
+      <p><strong style="color:var(--c-white)">Contact:</strong> For privacy inquiries, email privacy@freedraft.io or write to FreeDraft Inc., Bengaluru, Karnataka, India.</p>
+    </div>
+    <button class="btn btn-ghost btn-full" onclick="closeModal('modal-privacy')" style="margin-top:20px">Close</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     JAVASCRIPT ENGINE
+═══════════════════════════════════ -->
+<script>
+(function(){
+"use strict";
+
+/* ─────────────────────────────────────
+   RIGHT-CLICK & DEV PROTECTION
+───────────────────────────────────── */
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  // Block F12, Ctrl+U, Ctrl+Shift+I/J/C, Ctrl+S, Ctrl+A (select all on page)
+  if (e.key === 'F12') { e.preventDefault(); return false; }
+  if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); return false; }
+  if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) { e.preventDefault(); return false; }
+  if (e.ctrlKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); return false; }
+});
+// Allow Ctrl+A only inside inputs/textareas
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
+    const tag = document.activeElement?.tagName;
+    if (!['INPUT','TEXTAREA'].includes(tag)) e.preventDefault();
+  }
+}, true);
+// Disable drag
+document.addEventListener('dragstart', e => e.preventDefault());
+// Detect devtools (basic)
+const devDetect = setInterval(() => {
+  const t = new Date();
+  debugger;
+  if (new Date() - t > 100) {
+    clearInterval(devDetect);
+  }
+}, 3000);
+
+/* ─────────────────────────────────────
+   NAVBAR
+───────────────────────────────────── */
+const navbar = document.getElementById('navbar');
+let drawerOpen = false;
+
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// Active nav link on scroll
+const sections = ['hero','features','ai-section','dashboard-demo','integrations','pricing','security-section'];
+const navItems = document.querySelectorAll('.nav-link-item');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.nav-link-item[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -50% 0px' });
+sections.forEach(id => { const el = document.getElementById(id); if (el) io.observe(el); });
+
+window.toggleDrawer = () => {
+  drawerOpen = !drawerOpen;
+  document.getElementById('navDrawer').classList.toggle('open', drawerOpen);
+  document.getElementById('navBackdrop').classList.toggle('show', drawerOpen);
+  document.getElementById('navBurger').classList.toggle('open', drawerOpen);
+  document.getElementById('navBurger').setAttribute('aria-expanded', drawerOpen);
+  document.body.style.overflow = drawerOpen ? 'hidden' : '';
+};
+window.closeDrawer = () => {
+  drawerOpen = false;
+  document.getElementById('navDrawer').classList.remove('open');
+  document.getElementById('navBackdrop').classList.remove('show');
+  document.getElementById('navBurger').classList.remove('open');
+  document.getElementById('navBurger').setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+};
+// Close drawer on resize to desktop
+window.addEventListener('resize', () => { if (window.innerWidth > 1023) closeDrawer(); });
+
+/* ─────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────── */
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('revealed'); revealObserver.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ─────────────────────────────────────
+   FEATURE TABS
+───────────────────────────────────── */
+window.switchTab = (btn, id) => {
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected','true');
+  const panel = document.getElementById('tab-' + id);
+  if (panel) panel.classList.add('active');
+};
+
+/* ─────────────────────────────────────
+   TOAST
+───────────────────────────────────── */
+window.toast = (msg, type = 'info') => {
+  const icons = { success:'✓', error:'✕', info:'ℹ', warning:'⚠' };
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span class="toast-icon">${icons[type]||'ℹ'}</span><span class="toast-text">${msg}</span>`;
+  container.appendChild(t);
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+};
+
+/* ─────────────────────────────────────
+   MODALS
+───────────────────────────────────── */
+window.openModal = id => {
+  closeAllModals();
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const first = m.querySelector('input,select,textarea,button:not(.modal-close)');
+  if (first) setTimeout(() => first.focus(), 100);
+};
+window.closeModal = id => {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('open');
+  document.body.style.overflow = '';
+};
+function closeAllModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  document.body.style.overflow = '';
+}
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+// Close on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
+
+/* ─────────────────────────────────────
+   FORM HELPERS
+───────────────────────────────────── */
+function showAlert(id, msg, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = `form-alert ${type} show`;
+  el.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span><span>${msg}</span>`;
+}
+function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function getVal(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function setDisabled(btn, state) { btn.disabled = state; }
+
+/* SIGNUP */
+window.doSignup = async () => {
+  const fn = getVal('su-fname'), ln = getVal('su-lname'), email = getVal('su-email'), pass = getVal('su-pass');
+  if (!fn || !ln) return showAlert('signupAlert','Please enter your first and last name','error');
+  if (!isEmail(email)) return showAlert('signupAlert','Please enter a valid work email','error');
+  if (pass.length < 8) return showAlert('signupAlert','Password must be at least 8 characters','error');
+  const btn = document.querySelector('#modal-signup .btn-primary');
+  setDisabled(btn, true); btn.textContent = 'Creating account…';
+  await delay(1400);
+  const users = JSON.parse(localStorage.getItem('fd_users') || '[]');
+  if (users.find(u => u.email === email)) {
+    showAlert('signupAlert','An account with this email already exists','error');
+    setDisabled(btn, false); btn.textContent = 'Create Free Account →'; return;
+  }
+  users.push({ email, name: `${fn} ${ln}`, company: getVal('su-company'), createdAt: Date.now() });
+  localStorage.setItem('fd_users', JSON.stringify(users));
+  localStorage.setItem('fd_auth', JSON.stringify({ email, name: `${fn} ${ln}`, loggedIn: true }));
+  setDisabled(btn, false); btn.textContent = 'Create Free Account →';
+  closeModal('modal-signup');
+  toast(`Welcome to FreeDraft, ${fn}! 🎉`, 'success');
+  updateAuthUI();
+};
+
+/* LOGIN */
+window.doLogin = async () => {
+  const email = getVal('li-email'), pass = getVal('li-pass');
+  if (!isEmail(email)) return showAlert('loginAlert','Please enter a valid email','error');
+  if (!pass) return showAlert('loginAlert','Please enter your password','error');
+  const btn = document.querySelector('#modal-login .btn-primary');
+  setDisabled(btn, true); btn.textContent = 'Signing in…';
+  await delay(1200);
+  const users = JSON.parse(localStorage.getItem('fd_users') || '[]');
+  const user = users.find(u => u.email === email);
+  if (!user) {
+    showAlert('loginAlert','No account found. Sign up first.','error');
+    setDisabled(btn, false); btn.textContent = 'Log In →'; return;
+  }
+  localStorage.setItem('fd_auth', JSON.stringify({ ...user, loggedIn: true }));
+  setDisabled(btn, false); btn.textContent = 'Log In →';
+  closeModal('modal-login');
+  toast(`Welcome back, ${user.name.split(' ')[0]}!`, 'success');
+  updateAuthUI();
+};
+
+/* DEMO REQUEST */
+window.doDemo = async () => {
+  const name = getVal('dm-name'), company = getVal('dm-company'), email = getVal('dm-email');
+  if (!name) return showAlert('demoAlert','Please enter your name','error');
+  if (!company) return showAlert('demoAlert','Please enter your company','error');
+  if (!isEmail(email)) return showAlert('demoAlert','Please enter a valid email','error');
+  const btn = document.querySelector('#modal-demo .btn-primary');
+  setDisabled(btn, true); btn.textContent = 'Sending…';
+  await delay(1500);
+  const demos = JSON.parse(localStorage.getItem('fd_demos') || '[]');
+  demos.push({ name, company, email, msg: getVal('dm-msg'), size: getVal('dm-size'), sentAt: Date.now() });
+  localStorage.setItem('fd_demos', JSON.stringify(demos));
+  setDisabled(btn, false); btn.textContent = 'Request Demo →';
+  showAlert('demoAlert','Demo request sent! We\'ll reach out within 24 hours.','success');
+  setTimeout(() => closeModal('modal-demo'), 2000);
+  toast(`Demo requested! We'll reach out to ${email} soon.`, 'success');
+};
+
+/* OAUTH MOCK */
+window.oauthSignup = provider => {
+  toast(`Connecting to ${provider}…`, 'info');
+  setTimeout(() => {
+    localStorage.setItem('fd_auth', JSON.stringify({ name: 'Demo User', email: 'demo@freedraft.io', loggedIn: true }));
+    closeAllModals();
+    toast(`Signed in with ${provider}! Welcome to FreeDraft 🎉`, 'success');
+    updateAuthUI();
+  }, 1200);
+};
+
+function updateAuthUI() {
+  const auth = JSON.parse(localStorage.getItem('fd_auth') || 'null');
+  if (auth?.loggedIn) {
+    const name = auth.name?.split(' ')[0] || 'User';
+    document.querySelectorAll('.nav-actions button, .drawer-actions button').forEach(b => {
+      if (b.textContent.includes('Get Started') || b.textContent.includes('Log In')) {
+        b.style.display = 'none';
+      }
+    });
+  }
+}
+
+/* ─────────────────────────────────────
+   AI CHAT ENGINE
+───────────────────────────────────── */
+const aiResponses = {
+  'nda red flags': [
+    `Analyzing NDA… Found <span class="highlight">3 potential issues</span>:<br><br>⚠️ <strong>Clause 4.2:</strong> Unlimited IP assignment — unusual and risky<br>⚠️ <strong>Clause 7.1:</strong> No mutual confidentiality — one-sided<br>✅ <strong>Clause 9:</strong> Jurisdiction looks standard<br><br>Recommend requesting revisions to §4.2 and §7.1.`
+  ],
+  'msa monthly': [
+    `I'll draft a SaaS MSA with monthly billing. Here's the structure:<br><br>📋 <span class="highlight">Draft outline ready:</span><br>• §1 Services & Deliverables<br>• §2 Fees & Monthly Billing (Net-30)<br>• §3 Intellectual Property<br>• §4 Confidentiality (mutual)<br>• §5 Liability Cap (2x annual fees)<br>• §6 Termination for Convenience<br><br>Full draft will be emailed in 30 seconds.`
+  ],
+  'expire 90': [
+    `Scanning your repository… <span class="highlight">4 contracts expire within 90 days:</span><br><br>⚠️ Vendor Agreement — OldCo (<strong>32 days</strong>)<br>⚠️ SLA — StartupXYZ (<strong>45 days</strong>)<br>📋 License — SoftwareCo (<strong>67 days</strong>)<br>📋 NDA — PartnerFirm (<strong>88 days</strong>)<br><br>Auto-renewal is enabled for 2 of these. Recommend reviewing OldCo terms.`
+  ],
+  'liability plain': [
+    `<span class="highlight">In plain English:</span><br><br>The liability clause says: <em>"Neither side can sue the other for more than the total amount paid under this contract in the 12 months before the claim."</em><br><br>✅ This is standard and reasonable<br>✅ Protects both parties equally<br>⚠️ No carve-out for IP infringement — worth adding`
+  ],
+  default: [
+    `Analyzing your query… <span class="highlight">Here's what I found:</span><br><br>I can help you with: drafting contracts, reviewing for risks, extracting key terms, tracking obligations, and comparing versions.<br><br>For best results, try asking about a specific contract type or clause. Would you like me to <span class="highlight">start a contract draft</span>?`,
+    `Processing your request… I've analyzed similar contracts in our database.<br><br>Based on industry benchmarks, I recommend reviewing: payment terms, IP ownership, and termination clauses.<br><br>Want me to generate a <span class="highlight">risk report</span> or <span class="highlight">draft a contract</span>?`,
+    `Great question! Let me search your contract library...<br><br>I found <span class="highlight">3 relevant precedents</span> in your repository. The most common approach for this situation is a mutual clause with a 30-day cure period.<br><br>Shall I <span class="highlight">draft the clause</span> for you?`
+  ]
+};
+let aiRespIdx = 0;
+let isTyping = false;
+
+function getAiResp(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes('nda') || m.includes('red flag')) return aiResponses['nda red flags'][0];
+  if (m.includes('msa') || m.includes('monthly') || m.includes('draft')) return aiResponses['msa monthly'][0];
+  if (m.includes('expir') || m.includes('90 day')) return aiResponses['expire 90'][0];
+  if (m.includes('liability') || m.includes('plain')) return aiResponses['liability plain'][0];
+  return aiResponses.default[aiRespIdx++ % aiResponses.default.length];
+}
+
+function appendMsg(text, cls, html=false) {
+  const msgs = document.getElementById('chatMessages');
+  const typing = msgs.querySelector('.typing-ind');
+  const div = document.createElement('div');
+  div.className = `msg ${cls}`;
+  if (html) div.innerHTML = text; else div.textContent = text;
+  if (typing) msgs.insertBefore(div, typing);
+  else msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const t = document.createElement('div');
+  t.className = 'typing-ind';
+  t.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  msgs.appendChild(t);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function hideTyping() {
+  const t = document.querySelector('.typing-ind');
+  if (t) t.remove();
+}
+
+window.sendChat = async () => {
+  if (isTyping) return;
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  appendMsg(msg, 'msg-user');
+  isTyping = true;
+  showTyping();
+  await delay(900 + Math.random() * 600);
+  hideTyping();
+  appendMsg(getAiResp(msg), 'msg-ai', true);
+  isTyping = false;
+};
+
+window.sendQuery = async (q) => {
+  const input = document.getElementById('chatInput');
+  input.value = q;
+  await sendChat();
+  document.getElementById('chatInput').focus();
+};
+
+/* ─────────────────────────────────────
+   LIVE DEMO (localStorage CRUD)
+───────────────────────────────────── */
+const STORE_KEY = 'fd_contracts';
+
+function getContracts() { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }
+function saveContracts(arr) { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); }
+
+function initDefaultContracts() {
+  if (getContracts().length === 0) {
+    saveContracts([
+      { id:1, name:'NDA — Acme Corp', type:'NDA', party:'Acme Corp', value:0, status:'Signed', created:Date.now()-86400000*3, end:'2026-12-31', notes:'Auto-renewing, mutual NDA, NY law' },
+      { id:2, name:'MSA — GlobalTech', type:'MSA', party:'GlobalTech Solutions', value:120000, status:'In Review', created:Date.now()-86400000, end:'2027-03-01', notes:'Annual contract, liability capped at $200k' },
+      { id:3, name:'SLA — StartupXYZ', type:'SLA', party:'StartupXYZ', value:24000, status:'Draft', created:Date.now()-3600000, end:'2026-09-15', notes:'99.9% uptime SLA, monthly billing' },
+    ]);
+  }
+}
+
+window.renderContracts = (search = '') => {
+  const list = document.getElementById('contractsList');
+  if (!list) return;
+  const contracts = getContracts().filter(c =>
+    !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.party.toLowerCase().includes(search.toLowerCase())
+  );
+  const count = getContracts().length;
+  document.getElementById('sidebar-count').textContent = count;
+  updateSignDropdown();
+  updateAnalytics();
+  if (contracts.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--c-muted2)">
+      <div style="font-size:2rem;margin-bottom:12px">📄</div>
+      <div style="font-size:.9rem">${search ? 'No contracts match your search.' : 'No contracts yet. Create your first one!'}</div>
+    </div>`;
+    return;
+  }
+  const statusColor = { 'Signed':'tag-green', 'In Review':'tag-gold', 'Draft':'tag-gray', 'Expired':'tag-red' };
+  list.innerHTML = contracts.map(c => `
+    <div class="demo-contract-row" role="listitem">
+      <span class="dcr-icon">📄</span>
+      <div class="dcr-info">
+        <div class="dcr-name">${escHtml(c.name)}</div>
+        <div class="dcr-meta">${escHtml(c.party)} · ${c.type} · ${c.value > 0 ? '$'+c.value.toLocaleString() : 'N/A'} · Ends ${c.end || 'N/A'}</div>
+      </div>
+      <div class="dcr-actions">
+        <span class="tag ${statusColor[c.status]||'tag-gray'}">${c.status}</span>
+        <button class="dcr-btn" onclick="previewContract(${c.id})" aria-label="Preview contract">👁</button>
+        <button class="dcr-btn" onclick="deleteContract(${c.id})" aria-label="Delete contract" style="color:var(--c-red)">🗑</button>
+      </div>
+    </div>
+  `).join('');
+};
+
+window.filterContracts = val => renderContracts(val);
+
+window.createContract = async () => {
+  const name = getVal('cName'), type = getVal('cType'), party = getVal('cParty');
+  if (!name) return toast('Please enter a contract name','error');
+  if (!type) return toast('Please select a contract type','error');
+  if (!party) return toast('Please enter a counterparty name','error');
+  const btn = document.querySelector('#view-create .btn-primary');
+  setDisabled(btn, true); btn.textContent = '🤖 AI drafting…';
+  await delay(1600);
+  const contracts = getContracts();
+  const newId = Date.now();
+  contracts.unshift({
+    id: newId, name, type, party, notes: getVal('cNotes'),
+    value: parseFloat(getVal('cValue')) || 0,
+    start: getVal('cStart'), end: getVal('cEnd'),
+    status: 'Draft', created: Date.now()
+  });
+  saveContracts(contracts);
+  setDisabled(btn, false); btn.textContent = '🤖 AI Draft & Create';
+  document.getElementById('createSuccess').className = 'form-alert success show';
+  setTimeout(() => { document.getElementById('createSuccess').className = 'form-alert success'; }, 3000);
+  clearCreateForm();
+  renderContracts();
+  toast(`"${name}" created and AI draft ready!`, 'success');
+  switchDemoView(document.querySelector('.demo-tab'), 'view-contracts');
+};
+
+window.clearCreateForm = () => {
+  ['cName','cType','cParty','cValue','cStart','cEnd','cNotes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+};
+
+window.deleteContract = id => {
+  const contracts = getContracts().filter(c => c.id !== id);
+  saveContracts(contracts);
+  renderContracts();
+  toast('Contract deleted','info');
+};
+
+window.previewContract = id => {
+  const c = getContracts().find(c => c.id === id);
+  if (!c) return;
+  const preview = document.getElementById('contractPreviewContent');
+  preview.innerHTML = `
+    <h4>${escHtml(c.name)}</h4>
+    <p><strong>Type:</strong> ${c.type} &nbsp;|&nbsp; <strong>Status:</strong> ${c.status}</p>
+    <p><strong>Counterparty:</strong> ${escHtml(c.party)}</p>
+    ${c.value > 0 ? `<p><strong>Contract Value:</strong> $${c.value.toLocaleString()}</p>` : ''}
+    ${c.start ? `<p><strong>Start Date:</strong> ${c.start}</p>` : ''}
+    ${c.end ? `<p><strong>End Date:</strong> ${c.end}</p>` : ''}
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0"/>
+    <p>This ${c.type} agreement is entered into by and between <strong>${escHtml(c.party)}</strong> ("Client") and FreeDraft User ("Provider"), effective as of the date first set forth above.</p>
+    <p>The Provider agrees to furnish the Client with the services described herein, in accordance with the terms and conditions set forth in this Agreement.</p>
+    ${c.notes ? `<p><strong>Key Terms:</strong> ${escHtml(c.notes)}</p>` : ''}
+    <p>This Agreement shall be governed by and construed in accordance with applicable law. Any disputes shall be resolved through binding arbitration.</p>
+    <p style="margin-top:20px;font-style:italic;font-size:.8rem">This is a FreeDraft AI-generated preview. Review with qualified legal counsel before execution.</p>
+  `;
+  document.getElementById('contract-preview-title').textContent = c.name;
+  openModal('modal-contract');
+};
+
+window.downloadContract = () => {
+  toast('PDF download would trigger here in production 📄', 'info');
+  closeModal('modal-contract');
+};
+
+function updateAnalytics() {
+  const contracts = getContracts();
+  const total = contracts.length;
+  const signed = contracts.filter(c => c.status === 'Signed').length;
+  const inReview = contracts.filter(c => c.status === 'In Review').length;
+  const draft = contracts.filter(c => c.status === 'Draft').length;
+  const totalVal = contracts.reduce((a,c) => a + (c.value||0), 0);
+  const cards = document.getElementById('analyticsCards');
+  if (cards) {
+    cards.innerHTML = `
+      <div class="ac-card"><div class="ac-num">${total}</div><div class="ac-lbl">Total Contracts</div></div>
+      <div class="ac-card"><div class="ac-num" style="color:var(--c-teal)">${signed}</div><div class="ac-lbl">Signed</div></div>
+      <div class="ac-card"><div class="ac-num" style="color:var(--c-gold)">${inReview}</div><div class="ac-lbl">In Review</div></div>
+      <div class="ac-card"><div class="ac-num" style="color:var(--c-muted2)">${draft}</div><div class="ac-lbl">Drafts</div></div>
+      <div class="ac-card" style="grid-column:span 2"><div class="ac-num">$${totalVal.toLocaleString()}</div><div class="ac-lbl">Total Contract Value</div></div>
+    `;
+  }
+  const bars = document.getElementById('statusBars');
+  if (bars && total > 0) {
+    const items = [
+      { label:'Signed', count:signed, color:'var(--c-teal)' },
+      { label:'In Review', count:inReview, color:'var(--c-gold)' },
+      { label:'Draft', count:draft, color:'var(--c-muted2)' },
+    ];
+    bars.innerHTML = items.map(item => {
+      const pct = total > 0 ? Math.round(item.count/total*100) : 0;
+      return `<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px">
+          <span style="color:var(--c-muted2)">${item.label}</span>
+          <span style="color:${item.color}">${item.count} (${pct}%)</span>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,.05);border-radius:3px">
+          <div style="height:100%;width:${pct}%;background:${item.color};border-radius:3px;transition:width .6s var(--ease-out)"></div>
+        </div>
+      </div>`;
+    }).join('');
+  } else if (bars) {
+    bars.innerHTML = '<div style="text-align:center;padding:20px;color:var(--c-muted2);font-size:.85rem">No contract data yet. Create your first contract!</div>';
+  }
+}
+
+function updateSignDropdown() {
+  const sel = document.getElementById('signSelect');
+  if (!sel) return;
+  const contracts = getContracts().filter(c => c.status !== 'Signed');
+  sel.innerHTML = '<option value="">Choose a contract…</option>' +
+    contracts.map(c => `<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
+}
+
+/* SIGN CONTRACT */
+window.signContract = async () => {
+  const id = parseInt(document.getElementById('signSelect')?.value);
+  const name = getVal('signerName'), email = getVal('signerEmail');
+  if (!id) return toast('Please select a contract to sign','error');
+  if (!name) return toast('Please enter your full name','error');
+  if (!isEmail(email)) return toast('Please enter a valid email','error');
+  const btn = document.querySelector('#view-sign .btn-primary');
+  setDisabled(btn,true); btn.textContent = 'Signing…';
+  await delay(1500);
+  const contracts = getContracts();
+  const c = contracts.find(c => c.id === id);
+  if (c) { c.status = 'Signed'; c.signedBy = name; c.signedAt = Date.now(); }
+  saveContracts(contracts);
+  setDisabled(btn,false); btn.textContent = '✍️ Sign Contract';
+  const successEl = document.getElementById('signSuccess');
+  document.getElementById('signSuccessMsg').textContent = `"${c?.name}" signed by ${name}!`;
+  successEl.className = 'form-alert success show';
+  setTimeout(() => { successEl.className = 'form-alert success'; }, 3500);
+  document.getElementById('signerName').value = '';
+  document.getElementById('signerEmail').value = '';
+  document.getElementById('signSelect').value = '';
+  document.getElementById('signPreview').textContent = ' ';
+  renderContracts();
+  toast(`Contract signed successfully! Certificate sent to ${email}`, 'success');
+};
+
+// Signature live preview
+document.getElementById('signerName')?.addEventListener('input', e => {
+  const preview = document.getElementById('signPreview');
+  if (preview) preview.textContent = e.target.value || ' ';
+});
+
+/* ─────────────────────────────────────
+   DEMO VIEW SWITCHER
+───────────────────────────────────── */
+window.switchDemoView = (btn, viewId) => {
+  document.querySelectorAll('.demo-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.demo-nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.demo-view').forEach(v => v.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const view = document.getElementById(viewId);
+  if (view) view.classList.add('active');
+  // Sync nav item
+  const sideBtn = Array.from(document.querySelectorAll('.demo-nav-item')).find(b => b.getAttribute('onclick')?.includes(viewId));
+  if (sideBtn) sideBtn.classList.add('active');
+  const topBtn = Array.from(document.querySelectorAll('.demo-tab')).find(b => b.getAttribute('onclick')?.includes(viewId));
+  if (topBtn) topBtn.classList.add('active');
+  renderContracts();
+};
+window.switchDemoViewSide = (btn, viewId) => switchDemoView(btn, viewId);
+
+/* ─────────────────────────────────────
+   PRICING TOGGLE
+───────────────────────────────────── */
+window.toggleBilling = (cb) => {
+  const badge = document.getElementById('billingBadge');
+  if (cb.checked) {
+    badge.textContent = 'Saving 20%!';
+    toast('Annual billing selected — 20% discount applied!','success');
+  } else {
+    badge.textContent = 'Save 20%';
+  }
+};
+
+/* ─────────────────────────────────────
+   UTILITIES
+───────────────────────────────────── */
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ─────────────────────────────────────
+   SMOOTH ANCHOR NAV (offset for navbar)
+───────────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    const top = target.getBoundingClientRect().top + window.scrollY - (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) + 16);
+    window.scrollTo({ top, behavior:'smooth' });
+    closeDrawer();
+  });
+});
+
+/* ─────────────────────────────────────
+   INIT
+───────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  initDefaultContracts();
+  renderContracts();
+  updateAuthUI();
+  // Animate hero stats counter
+  document.querySelectorAll('.stat-val em').forEach(el => {
+    const target = parseFloat(el.textContent);
+    if (isNaN(target)) return;
+    let current = 0;
+    const step = target / 40;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.parentElement.querySelector('em').textContent = (current >= target) ? el.textContent : (Number.isInteger(target) ? Math.floor(current) : current.toFixed(0));
+      if (current >= target) clearInterval(timer);
+    }, 30);
+  });
+});
+
+// Set default date values in create form
+const today = new Date().toISOString().split('T')[0];
+const nextYear = new Date(Date.now() + 365*86400000).toISOString().split('T')[0];
+const startEl = document.getElementById('cStart');
+const endEl = document.getElementById('cEnd');
+if (startEl) startEl.value = today;
+if (endEl) endEl.value = nextYear;
+
+})(); // end IIFE
+</script>
+</body>
+</html>
